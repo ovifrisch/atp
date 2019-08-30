@@ -8,7 +8,7 @@ import Paper from '@material-ui/core/Paper';
 // import { AutoSizer, Column, Table } from 'react-virtualized';
 import './styles/MatchInfo.css'
 import { css } from '@emotion/core';
-import {MoonLoader} from 'react-spinners';
+import {RingLoader} from 'react-spinners';
 
 
 class MatchInfo extends React.Component {
@@ -16,7 +16,8 @@ class MatchInfo extends React.Component {
 		super(props)
 		this.state = {
 			loading: false,
-			match_data: []
+			match_data: [],
+			color: 'red'
 		}
 	}
 
@@ -27,9 +28,10 @@ class MatchInfo extends React.Component {
 		})
 	}
 
-	set_loading() {
+	set_loading(color) {
 		this.setState({
-			loading: true
+			loading: true,
+			color: color
 		})
 	}
 
@@ -49,15 +51,16 @@ class MatchInfo extends React.Component {
 		const override = css`
 			display: block;
 			margin: 0 auto;
-			top: 100px;
+			top: 120px;
 		`;
 
 		if (this.state.loading == true) {
 			return (
 				<div id="the_table">
 					<Paper id= "the_paper">
-						<MoonLoader
+						<RingLoader
 							css={override}
+							color={this.state.color}
 						/>
 					</Paper>
 				</div>	

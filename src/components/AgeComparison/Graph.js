@@ -356,8 +356,8 @@ class Graph extends React.Component {
 
 	fetch_and_process_match_data(data_idx, i1, i2, x, y) {
 		// first display the loading icon in the box
-		this.info_box.current.set_loading()
 		var color = this.state.datasets[data_idx]['data']['borderColor']
+		this.info_box.current.set_loading(color)
 		var box_positions = this.position_box(x, y)
 		document.getElementById("the_table").setAttribute("style", `display:block; left:${box_positions[0]}px; top:${box_positions[1]}px; border: 10px solid ${this.rgb2hex(color)}`)
 		var player_id = this.state.datasets[data_idx]['player_id']

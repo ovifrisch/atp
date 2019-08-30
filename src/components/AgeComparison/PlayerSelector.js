@@ -1,13 +1,15 @@
 import React, {useEffect, useState} from 'react';
 import { Dropdown } from 'semantic-ui-react'
-import faker from 'faker'
 import './styles/PlayerSelector.css'
 
 class PlayerSelector extends React.Component {
 	constructor(props) {
 		super(props)
 		this.state = {
-			players: []
+			players: [],
+			loading: false,
+			placeholder: 'Select a Player',
+			hovered_player: null
 		}
 	}
 
@@ -33,6 +35,9 @@ class PlayerSelector extends React.Component {
 
 
 	search_change(data) {
+		this.setState({
+			loading: true
+		})
 		const filter = data['searchQuery']
 		if (filter.length == 0) {
 			var base = "https://young-meadow-84276.herokuapp.com"
@@ -40,7 +45,8 @@ class PlayerSelector extends React.Component {
 			response.json().then(data => {
 				console.log(data)
 				this.setState({
-					players: this.convert_data(data['data'])
+					players: this.convert_data(data['data']),
+					loading: false
 				})
 			}))
 		}
@@ -50,7 +56,8 @@ class PlayerSelector extends React.Component {
 			response.json().then(data => {
 				console.log(data)
 				this.setState({
-					players: this.convert_data(data['data'])
+					players: this.convert_data(data['data']),
+					loading: false
 				})
 			}))
 		}
@@ -67,28 +74,37 @@ class PlayerSelector extends React.Component {
 		this.props.added_player_handler(player_id, player_name)
 	}
 
+	close(d) {
+		console.log(d)
+	}
+
+	open(d) {
+		this.setState({
+			placeholder: ""
+		})
+	}
+
+	focus(d) {
+		console.log('focus')
+	}
+
+
+
 	render() {
-		const friendOptions = [
-		  {
-		    key: 'Jenny Hess',
-		    text: 'Jenny Hess',
-		    value: 'Jenny Hess',
-		  },
-		  {
-		    key: 'Elliot Fu',
-		    text: 'Elliot Fu',
-		    value: 'Elliot Fu',
-		  }
-		]
 		return (
 			<div id="the_player_selector">
 				<Dropdown
-					placeholder='Select a Player'
+					loading={this.state.loading}
+					selectOnBlur={false}
 					search
 					selection
 					onChange={(_, data) => this.label_click(data)}
 					onSearchChange={(_, data) => this.search_change(data)}
 					options={this.state.players}
+					onClose = {(e, d) => this.close(d)}
+					onOpen = {(e, d) => this.open(d)}
+					onFocus={(e, d) => this.focus(d)}
+					text={'Search a player...'}
 				/>
 			</div>
 		)
