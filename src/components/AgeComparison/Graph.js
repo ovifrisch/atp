@@ -12,6 +12,8 @@ class Graph extends React.Component {
 			labels: this.get_labels(20, 30),
 			start_age: 20,
 			end_age: 30,
+			start_date: '20090225',
+			end_date: '20190225',
 			available_colors: Graph.colors,
 			highlight_data_idx: -1,
 			highlight_idx1: 0,
@@ -21,7 +23,27 @@ class Graph extends React.Component {
 	}
 
 	change_dimension(dimension) {
-		console.log("graph change dimension call")
+		var idx = 0;
+		var base = ""
+		var endpt;
+		var new_datasets = []
+		const request = async(idx) => {
+			if (idx == this.state.datasets.length) {
+				return
+			}
+			var player_id = this.state.datasets[idx]['player_id']
+			if (dimension == 'age') {
+				endpt = `/get_ranking_history?player_id=${player_id}&starting_age=${this.state.start_age}&ending_age=${this.state.end_age}`
+			} else {
+				endpt = `/get_ranking_history_date?player_id=${player_id}&starting_date=${this.state.start_date}&ending_date=${this.state.end_date}`
+			}
+			const response = await fetch(base + endpt);
+			const data = await response.json();
+			console.log(data)
+			request(idx + 1)
+		}
+
+		request(0)
 	}
 
 	get_labels(start_yr, end_yr) {
@@ -93,6 +115,13 @@ class Graph extends React.Component {
 		var base = "https://young-meadow-84276.herokuapp.com"
 		var endpt = `/get_ranking_history?player_id=${p_id}&starting_age=${s}&ending_age=${e}`
 		return fetch(base + endpt)
+	}
+
+
+	fetch_ranking_history_date(p_id, s, e) {
+		var base = "https://young-meadow-84276.herokuapp.com"
+		var endpt = `/get_ranking_history_date?player_id=${p_id}&starting_date=${s}&ending_date=${e}`
+		return fetch(base, endpt)
 	}
 
 	// http GET to flask api to fetch significant matches for this player at this age
