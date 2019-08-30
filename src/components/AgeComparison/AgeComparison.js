@@ -3,6 +3,7 @@ import CurrentPlayers from "./CurrentPlayers"
 import Graph from "./Graph"
 import PlayerSelector from "./PlayerSelector"
 import AgeSlider from "./AgeSlider"
+import GraphSwitch from './GraphSwitch'
 import './styles/AgeComparison.css'
 
 class AgeComparison extends React.Component {
@@ -29,7 +30,11 @@ class AgeComparison extends React.Component {
 
 	handle_removed_player(id) {
 		this.graph.current.removePlayer(id)
-	} 
+	}
+
+	handle_dimension_change(dim) {
+		console.log(dim)
+	}
 
 	render() {
 		return (
@@ -37,6 +42,8 @@ class AgeComparison extends React.Component {
 				<div id="player_selector_and_current_players">
 					<PlayerSelector added_player_handler={(pl_id, pl_name) => this.handle_added_player(pl_id, pl_name)} />
 					<CurrentPlayers ref={this.current_players} removed_player_handler={(id) => this.handle_removed_player(id)} />
+					<GraphSwitch dimension_change_handler = {(dim) => this.handle_dimension_change(dim)}>
+					</GraphSwitch>
 				</div>
 
 				<div id="chart_and_slider">
