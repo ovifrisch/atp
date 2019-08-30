@@ -1,0 +1,15 @@
+
+
+#the_table {
+	position: absolute;
+	display: none;
+	left: 0px;
+	top: 0px;
+}
+
+#the_paper {
+	height: 300px;
+	width: 500px;
+	overflow-y: auto;
+	overflow-x: auto;
+}
