@@ -21,7 +21,8 @@ class PlayerSelector extends React.Component {
 	}
 
 	componentDidMount() {
-		fetch("/topTenPlayers").then(response => 
+		var base = "https://young-meadow-84276.herokuapp.com"
+		fetch(base + "/topTenPlayers").then(response => 
 			response.json().then(data => {
 				this.setState({
 					players: this.convert_data(data['data'])
@@ -34,7 +35,8 @@ class PlayerSelector extends React.Component {
 	search_change(data) {
 		const filter = data['searchQuery']
 		if (filter.length == 0) {
-			fetch("/topTenPlayers").then(response => 
+			var base = "https://young-meadow-84276.herokuapp.com"
+			fetch(base + "/topTenPlayers").then(response => 
 			response.json().then(data => {
 				console.log(data)
 				this.setState({
@@ -43,7 +45,8 @@ class PlayerSelector extends React.Component {
 			}))
 		}
 		else {
-			fetch(`/topTenFiltered?prefix=${filter}`).then(response =>
+			var base = "https://young-meadow-84276.herokuapp.com"
+			fetch(base + `/topTenFiltered?prefix=${filter}`).then(response =>
 			response.json().then(data => {
 				console.log(data)
 				this.setState({

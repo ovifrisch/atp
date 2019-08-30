@@ -86,8 +86,9 @@ class Graph extends React.Component {
 
 	// http GET to flask api to fetch ranking history of player with id=p_id between ages of s and e
 	fetch_ranking_history(p_id, s, e) {
+		var base = "https://young-meadow-84276.herokuapp.com"
 		var endpt = `/get_ranking_history?player_id=${p_id}&starting_age=${s}&ending_age=${e}`
-		return fetch(endpt)
+		return fetch(base + endpt)
 	}
 
 	// http GET to flask api to fetch significant matches for this player at this age
@@ -113,8 +114,9 @@ class Graph extends React.Component {
 
 		date1 = date_str(date1)
 		date2 = date_str(date2)
+		var base = "https://young-meadow-84276.herokuapp.com"
 		var endpt = `/get_significant_matches?player_id=${p_id}&date1=${date1}&date2=${date2}`
-		return fetch(endpt)
+		return fetch(base + endpt)
 	}
 
 	changeAgeRange(val, min_max) {
@@ -144,8 +146,9 @@ class Graph extends React.Component {
 				})
 				return
 			}
+			var base = "https://young-meadow-84276.herokuapp.com"
 			var endpt = `/get_ranking_history?player_id=${player_ids[idx]}&starting_age=${start}&ending_age=${end}`
-			const response = await fetch(endpt);
+			const response = await fetch(base + endpt);
 			const data = await response.json();
 			var dates = data['data'].map(x => x['date'])
 			var ranks = data['data'].map(x => x['rank'])
