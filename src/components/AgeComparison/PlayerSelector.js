@@ -9,7 +9,8 @@ class PlayerSelector extends React.Component {
 			players: [],
 			loading: false,
 			placeholder: 'Select a Player',
-			hovered_player: null
+			hovered_player: null,
+			init_load: false
 		}
 	}
 
@@ -27,7 +28,8 @@ class PlayerSelector extends React.Component {
 		fetch(base + "/topTenPlayers").then(response => 
 			response.json().then(data => {
 				this.setState({
-					players: this.convert_data(data['data'])
+					players: this.convert_data(data['data']),
+					init_load: true
 				})
 		}))
 	}
@@ -79,9 +81,11 @@ class PlayerSelector extends React.Component {
 	}
 
 	open(d) {
-		this.setState({
-			placeholder: ""
-		})
+		if (this.state.init_load == false) {
+			this.setState({
+				loading: true
+			})
+		}
 	}
 
 	focus(d) {

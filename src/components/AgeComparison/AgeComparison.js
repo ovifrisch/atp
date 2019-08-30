@@ -12,6 +12,12 @@ class AgeComparison extends React.Component {
 		this.current_players = React.createRef()
 	}
 
+	componentDidMount() {
+		// just ping the api in case it's sleeping. silly heroku
+		var base = "https://young-meadow-84276.herokuapp.com"
+		fetch(base + "/ping")
+	}
+
 	handle_slider_change(val, min_max) {
 		this.graph.current.changeAgeRange(val, min_max)
 	}
