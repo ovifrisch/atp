@@ -20,6 +20,10 @@ class Graph extends React.Component {
 		}
 	}
 
+	change_dimension(dimension) {
+		console.log("graph change dimension call")
+	}
+
 	get_labels(start_yr, end_yr) {
 		if (start_yr >= end_yr) {
 			return []

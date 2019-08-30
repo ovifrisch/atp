@@ -10,6 +10,7 @@ class AgeComparison extends React.Component {
 	constructor(props) {
 		super(props)
 		this.graph = React.createRef()
+		this.age_slider = React.createRef()
 		this.current_players = React.createRef()
 	}
 
@@ -32,8 +33,9 @@ class AgeComparison extends React.Component {
 		this.graph.current.removePlayer(id)
 	}
 
-	handle_dimension_change(dim) {
-		console.log(dim)
+	handle_dimension_change(dimension) {
+		this.age_slider.current.change_dimension(dimension)
+		this.graph.current.change_dimension(dimension)
 	}
 
 	render() {
@@ -47,8 +49,8 @@ class AgeComparison extends React.Component {
 				</div>
 
 				<div id="chart_and_slider">
-					<Graph ref={this.graph}/>
-					<AgeSlider slider_handler={(val, min_max) => this.handle_slider_change(val, min_max)}/>
+					<Graph ref={this.graph} />
+					<AgeSlider ref = {this.age_slider} slider_handler={(val, min_max) => this.handle_slider_change(val, min_max)}/>
 				</div>
 			</div>
 		)

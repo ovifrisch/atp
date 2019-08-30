@@ -16,6 +16,10 @@ class AgeSlider extends React.Component {
 		this.props.slider_handler(val, "min")
 	}
 
+	change_dimension(dimension) {
+		console.log("age slider change dimension call")
+	}
+
 	render() {
 
 		function AirbnbThumbComponent(props) {
