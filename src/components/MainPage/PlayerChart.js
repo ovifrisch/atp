@@ -7,7 +7,6 @@ import {default_colors} from './ChartConstants'
 
 class PlayerChart extends React.Component {
 	constructor(props) {
-		console.log(process.env)
 		super(props)
 		this.info_box = React.createRef()
 		this.state = {

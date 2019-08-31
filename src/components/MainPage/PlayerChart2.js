@@ -4,10 +4,22 @@ import MatchInfo from './MatchInfo'
 import './styles/Graph.css'
 import './graph_helpers'
 
-class Graph2 extends React.Component {
+class PlayerChart2 extends React.Component {
 	constructor(props) {
 		this.state = {
-
+			window: {
+				left: {
+					age: 20,
+					date: '20100101'
+				},
+				right: {
+					age: 30,
+					date: '20200101'
+				}
+			},
+			x_axis: 'date',
+			y_axis: 'rank',
+			x_data: this.get_dates(20, 30)
 		}
 	}
 
@@ -47,6 +59,11 @@ class Graph2 extends React.Component {
 	inspectRange(player_id, x_idx1, x_idx2) {
 
 	}
+
+
+	render() {
+
+	}
 }
 
-export default Graph2;
+export default PlayerChart2;

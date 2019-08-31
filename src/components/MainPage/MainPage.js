@@ -48,8 +48,8 @@ class MainPage extends React.Component {
 						removed_player_handler={(id) => this.handle_removed_player(id)}
 					/>
 					<PlayerChartSwitch
-						dimension_change_handler = {(dim) => this.handle_dimension_change(dim)}>
-					</PlayerChartSwitch>
+						dimension_change_handler = {(dim) => this.handle_dimension_change(dim)}
+					/>
 				</div>
 
 				<div id="chart_and_slider">
