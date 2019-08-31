@@ -124,7 +124,7 @@ class Graph extends React.Component {
 		var player_ids = this.state.datasets.map(x => x['player_id'])
 		var player_names = this.state.datasets.map(x => x['player_name'])
 
-		var base = ""
+		var base = "https://young-meadow-84276.herokuapp.com"
 		var new_datasets = []
 		var new_labels;
 
