@@ -3,9 +3,12 @@ import ChartComponent, {Chart, Line} from 'react-chartjs-2';
 import MatchInfo from './MatchInfo'
 import './styles/Graph.css'
 import {addPlayer} from './graph_helpers'
+import {endpt_base} from '../../GlobalConstants'
+import {default_colors} from './GraphConstants'
 
 class Graph extends React.Component {
 	constructor(props) {
+		console.log(process.env)
 		super(props)
 		this.info_box = React.createRef()
 		this.state = {
@@ -15,7 +18,7 @@ class Graph extends React.Component {
 			end_age: 30,
 			start_date: '20100101',
 			end_date: '20200101',
-			available_colors: Graph.colors,
+			available_colors: default_colors,
 			highlight_data_idx: -1,
 			highlight_idx1: 0,
 			highlight_idx2: 0,
@@ -70,9 +73,8 @@ class Graph extends React.Component {
 				})
 				return
 			}
-			var base = "https://young-meadow-84276.herokuapp.com"
 			var endpt = `/get_ranking_history?player_id=${player_ids[idx]}&starting_age=${start}&ending_age=${end}`
-			const response = await fetch(base + endpt);
+			const response = await fetch(endpt_base + endpt);
 			const data = await response.json();
 			var dates = data['data'].map(x => x['date'])
 			var ranks = data['data'].map(x => x['rank'])
@@ -143,11 +145,10 @@ class Graph extends React.Component {
 			}))
 		} else {
 			var new_labels;
-			var base = "https://young-meadow-84276.herokuapp.com"
 			const request = async(idx) => {
 				if (idx == -1) {
 					let labels_enpt = `/get_ranking_dates_between?starting_date=${this.state.start_date}&ending_date=${this.state.end_date}`
-					let labels_response = await fetch(base + labels_enpt)
+					let labels_response = await fetch(endpt_base + labels_enpt)
 					const labels_data = await labels_response.json();
 					new_labels = labels_data['data']
 					request(idx + 1)
@@ -155,7 +156,7 @@ class Graph extends React.Component {
 					return
 				} else { // idx == 0
 					var endpt = `/get_ranking_history_date?player_id=${player_id}&starting_date=${this.state.start_date}&ending_date=${this.state.end_date}`;
-					const response = await fetch(base + endpt);
+					const response = await fetch(endpt_base + endpt);
 					const data = await response.json();
 					var ranks = data['data'].map(x => x['rank'])
 					var dates = data['data'].map(x => x['date'])
@@ -186,7 +187,6 @@ class Graph extends React.Component {
 		var player_ids = this.state.datasets.map(x => x['player_id'])
 		var player_names = this.state.datasets.map(x => x['player_name'])
 
-		var base = "https://young-meadow-84276.herokuapp.com"
 		var new_datasets = []
 		var new_labels;
 
@@ -211,13 +211,13 @@ class Graph extends React.Component {
 			}
 			else if (idx == -1) {
 				let labels_enpt = `/get_ranking_dates_between?starting_date=${start}&ending_date=${end}`
-				let labels_response = await fetch(base + labels_enpt)
+				let labels_response = await fetch(endpt_base + labels_enpt)
 				const labels_data = await labels_response.json();
 				new_labels = labels_data['data']
 			} else {
 				var player_id = this.state.datasets[idx]['player_id']
 				var endpt = `/get_ranking_history_date?player_id=${player_id}&starting_date=${start}&ending_date=${end}`;
-				const response = await fetch(base + endpt);
+				const response = await fetch(endpt_base + endpt);
 				const data = await response.json();
 				var ranks = data['data'].map(x => x['rank'])
 				var dates = data['data'].map(x => x['date'])
@@ -238,17 +238,6 @@ class Graph extends React.Component {
 			this.getDateRange()
 		}
 	}
-
-	static colors = [
-		'rgb(76, 128, 24, 1)',
-		'rgb(24, 76, 128, 1)',
-		'rgb(128, 24, 128, 1)',
-		'rgb(216, 12, 12, 1)',
-		'rgb(225, 122, 19, 1)',
-		'rgb(19, 225, 225, 1)',
-		'rgb(68, 97, 39, 1)',
-		'rgb(97, 39, 39, 1)'
-	]
 
 	generate_color() {
 		var o = Math.round, r = Math.random, s = 255;
@@ -292,16 +281,14 @@ class Graph extends React.Component {
 
 	// http GET to flask api to fetch ranking history of player with id=p_id between ages of s and e
 	fetch_ranking_history(p_id, s, e) {
-		var base = "https://young-meadow-84276.herokuapp.com"
 		var endpt = `/get_ranking_history?player_id=${p_id}&starting_age=${s}&ending_age=${e}`
-		return fetch(base + endpt)
+		return fetch(endpt_base + endpt)
 	}
 
 
 	fetch_ranking_history_date(p_id, s, e) {
-		var base = "https://young-meadow-84276.herokuapp.com"
 		var endpt = `/get_ranking_history_date?player_id=${p_id}&starting_date=${s}&ending_date=${e}`
-		return fetch(base, endpt)
+		return fetch(endpt_base, endpt)
 	}
 
 	// http GET to flask api to fetch significant matches for this player at this age
@@ -327,9 +314,8 @@ class Graph extends React.Component {
 
 		date1 = date_str(date1)
 		date2 = date_str(date2)
-		var base = "https://young-meadow-84276.herokuapp.com"
 		var endpt = `/get_significant_matches?player_id=${p_id}&date1=${date1}&date2=${date2}`
-		return fetch(base + endpt)
+		return fetch(endpt_base + endpt)
 	}
 
 	removePlayer(player_id) {

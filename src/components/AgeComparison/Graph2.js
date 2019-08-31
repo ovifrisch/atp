@@ -2,6 +2,7 @@ import React from 'react';
 import ChartComponent, {Chart, Line} from 'react-chartjs-2';
 import MatchInfo from './MatchInfo'
 import './styles/Graph.css'
+import './graph_helpers'
 
 class Graph2 extends React.Component {
 	constructor(props) {

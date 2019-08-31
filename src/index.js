@@ -4,6 +4,9 @@ import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 import 'semantic-ui-css/semantic.min.css'
+import dotenv from 'dotenv'
+const res = dotenv.config()
+console.log(res)
 
 ReactDOM.render(<App />, document.getElementById('root'));
 

@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import { Dropdown } from 'semantic-ui-react'
 import './styles/PlayerSelector.css'
+import {endpt_base} from '../../GlobalConstants'
 
 class PlayerSelector extends React.Component {
 	constructor(props) {
@@ -24,8 +25,7 @@ class PlayerSelector extends React.Component {
 	}
 
 	componentDidMount() {
-		var base = "https://young-meadow-84276.herokuapp.com"
-		fetch(base + "/topTenPlayers").then(response => 
+		fetch(endpt_base + "/topTenPlayers").then(response => 
 			response.json().then(data => {
 				this.setState({
 					players: this.convert_data(data['data']),
