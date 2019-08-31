@@ -74,9 +74,9 @@ class PlayerChart extends React.Component {
 			var endpt = `/get_ranking_history?player_id=${player_ids[idx]}&starting_age=${start}&ending_age=${end}`
 			const response = await fetch(endpt_base + endpt);
 			const data = await response.json();
-			var dates = data['data'].map(x => x['date'])
-			var ranks = data['data'].map(x => x['rank'])
-			var labels = data['data'].map(x => x['age'])
+			var dates = data.map(x => x['date'])
+			var ranks = data.map(x => x['rank'])
+			var labels = data.map(x => x['age'])
 			var values = this.pad_ranks_age(ranks, dates, labels, start, end)
 			var padded_ranks = values[0]
 			var padded_dates = values[1]
@@ -129,9 +129,9 @@ class PlayerChart extends React.Component {
 		if (this.state.dimension == "age") {
 			var promise = this.fetch_ranking_history(player_id, this.state.start_age, this.state.end_age)
 			promise.then(response => response.json().then(data => {
-				var ranks = data['data'].map(x => x['rank'])
-				var dates = data['data'].map(x => x['date'])
-				var labels = data['data'].map(x => x['age'])
+				var ranks = data.map(x => x['rank'])
+				var dates = data.map(x => x['date'])
+				var labels = data.map(x => x['age'])
 				var values = this.pad_ranks_age(ranks, dates, labels, this.state.start_age, this.state.end_age)
 				var padded_ranks = values[0]
 				var padded_dates = values[1]
@@ -147,8 +147,7 @@ class PlayerChart extends React.Component {
 				if (idx == -1) {
 					let labels_enpt = `/get_ranking_dates_between?starting_date=${this.state.start_date}&ending_date=${this.state.end_date}`
 					let labels_response = await fetch(endpt_base + labels_enpt)
-					const labels_data = await labels_response.json();
-					new_labels = labels_data['data']
+					new_labels = await labels_response.json();
 					request(idx + 1)
 				} else if (idx > 1) {
 					return
@@ -156,8 +155,8 @@ class PlayerChart extends React.Component {
 					var endpt = `/get_ranking_history_date?player_id=${player_id}&starting_date=${this.state.start_date}&ending_date=${this.state.end_date}`;
 					const response = await fetch(endpt_base + endpt);
 					const data = await response.json();
-					var ranks = data['data'].map(x => x['rank'])
-					var dates = data['data'].map(x => x['date'])
+					var ranks = data.map(x => x['rank'])
+					var dates = data.map(x => x['date'])
 					var values = this.pad_ranks_date(new_labels, dates, ranks)
 					var new_dataset = this.create_dataset(values[0], values[1], player_name, player_id, color)
 					this.setState({
@@ -210,15 +209,14 @@ class PlayerChart extends React.Component {
 			else if (idx == -1) {
 				let labels_enpt = `/get_ranking_dates_between?starting_date=${start}&ending_date=${end}`
 				let labels_response = await fetch(endpt_base + labels_enpt)
-				const labels_data = await labels_response.json();
-				new_labels = labels_data['data']
+				new_labels = await labels_response.json();
 			} else {
 				var player_id = this.state.datasets[idx]['player_id']
 				var endpt = `/get_ranking_history_date?player_id=${player_id}&starting_date=${start}&ending_date=${end}`;
 				const response = await fetch(endpt_base + endpt);
 				const data = await response.json();
-				var ranks = data['data'].map(x => x['rank'])
-				var dates = data['data'].map(x => x['date'])
+				var ranks = data.map(x => x['rank'])
+				var dates = data.map(x => x['date'])
 				var values = this.pad_ranks_date(new_labels, dates, ranks)
 				var new_dataset = this.create_dataset(values[0], values[1], player_names[idx], player_ids[idx], old_colors[idx])
 				new_datasets.push(new_dataset)
@@ -457,7 +455,7 @@ class PlayerChart extends React.Component {
 	}
 
 	display_match_data(data) {
-		this.info_box.current.set_match_data(data['data'])
+		this.info_box.current.set_match_data(data)
 	}
 
 	fetch_and_process_match_data(data_idx, i1, i2, x, y) {

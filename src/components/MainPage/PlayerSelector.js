@@ -28,7 +28,7 @@ class PlayerSelector extends React.Component {
 		fetch(endpt_base + "/topTenPlayers").then(response => 
 			response.json().then(data => {
 				this.setState({
-					players: this.convert_data(data['data']),
+					players: this.convert_data(data),
 					init_load: true
 				})
 		}))
