@@ -2,7 +2,7 @@ import React from 'react';
 import CurrentPlayers from "./CurrentPlayers"
 import Graph from "./Graph"
 import PlayerSelector from "./PlayerSelector"
-import AgeSlider from "./AgeSlider"
+import AgeSlider from "./DimensionSlider"
 import GraphSwitch from './GraphSwitch'
 import './styles/AgeComparison.css'
 
@@ -10,18 +10,16 @@ class AgeComparison extends React.Component {
 	constructor(props) {
 		super(props)
 		this.graph = React.createRef()
-		this.age_slider = React.createRef()
+		this.dimension_slider = React.createRef()
 		this.current_players = React.createRef()
 	}
 
-	componentDidMount() {
-		// just ping the api in case it's sleeping. silly heroku
-		var base = "https://young-meadow-84276.herokuapp.com"
-		fetch(base + "/ping")
+	handle_slider_change_age(val, min_max) {
+		this.graph.current.getAgeRange(val, min_max)
 	}
 
-	handle_slider_change(val, min_max) {
-		this.graph.current.changeAgeRange(val, min_max)
+	handle_slider_change_date(val, min_max) {
+		this.graph.current.getDateRange(val, min_max)
 	}
 
 	handle_added_player(id, name) {
@@ -34,7 +32,7 @@ class AgeComparison extends React.Component {
 	}
 
 	handle_dimension_change(dimension) {
-		this.age_slider.current.change_dimension(dimension)
+		this.dimension_slider.current.change_dimension(dimension)
 		this.graph.current.change_dimension(dimension)
 	}
 
@@ -50,7 +48,11 @@ class AgeComparison extends React.Component {
 
 				<div id="chart_and_slider">
 					<Graph ref={this.graph} />
-					<AgeSlider ref = {this.age_slider} slider_handler={(val, min_max) => this.handle_slider_change(val, min_max)}/>
+					<AgeSlider
+						ref = {this.dimension_slider}
+						slider_handler_age={(val, min_max) => this.handle_slider_change_age(val, min_max)}
+						slider_handler_date={(val, min_max) => this.handle_slider_change_date(val, min_max)}
+					/>
 				</div>
 			</div>
 		)

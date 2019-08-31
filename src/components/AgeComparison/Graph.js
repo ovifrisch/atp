@@ -9,44 +9,84 @@ class Graph extends React.Component {
 		this.info_box = React.createRef()
 		this.state = {
 			datasets: [],
-			labels: this.get_labels(20, 30),
+			labels: this.get_labels_age(20, 30),
 			start_age: 20,
 			end_age: 30,
-			start_date: '20090225',
-			end_date: '20190225',
+			start_date: '20100101',
+			end_date: '20200101',
 			available_colors: Graph.colors,
 			highlight_data_idx: -1,
 			highlight_idx1: 0,
 			highlight_idx2: 0,
-			match_data: []
+			match_data: [],
+			dimension: 'age'
 		}
 	}
 
-	change_dimension(dimension) {
-		var idx = 0;
-		var base = ""
-		var endpt;
-		var new_datasets = []
+	pad_ranks_age(ranks, dates, labels, start, end) {
+		var new_ranks = Array(Math.max(end - start, 0) * 96).fill(null)
+		var new_dates = Array(Math.max(end - start, 0) * 96).fill(null)
+		for (var i = 0; i < labels.length; i++) {
+			if (labels[i] < start || labels[i] > end) {
+				continue
+			}
+			var idx = Math.floor((labels[i] - start) / (1/96))
+			new_dates[idx] = dates[i]
+			if (new_ranks[idx] === null) {
+				new_ranks[idx] = ranks[i]
+			} else {
+				new_ranks[idx] = Math.min(new_ranks[idx], ranks[i])
+			}
+		}
+		return [new_ranks, new_dates]
+	}
+
+	getAgeRange(val, min_max) {
+		// if any part of the interval of the new range is in the old range,
+		// then we don't necessarily need to refetch this data. but for now
+		// to keep things simple, just refetch everything
+		var old_colors = this.state.datasets.map(x => x['data']['backgroundColor'])
+		var player_ids = this.state.datasets.map(x => x['player_id'])
+		var player_names = this.state.datasets.map(x => x['player_name'])
+		var new_datasets = [];
+		var start = this.state.start_age
+		var end = this.state.end_age
+		if (min_max == "max") {
+			end = val
+		} else if (min_max == "min") {
+			start = val
+		}
+		var new_labels = this.get_labels_age(start, end)
+
 		const request = async(idx) => {
-			if (idx == this.state.datasets.length) {
+			if (idx >= player_ids.length) {
+				this.setState({
+					datasets: new_datasets,
+					labels: new_labels,
+					start_age: start,
+					end_age: end,
+					dimension: 'age'
+				})
 				return
 			}
-			var player_id = this.state.datasets[idx]['player_id']
-			if (dimension == 'age') {
-				endpt = `/get_ranking_history?player_id=${player_id}&starting_age=${this.state.start_age}&ending_age=${this.state.end_age}`
-			} else {
-				endpt = `/get_ranking_history_date?player_id=${player_id}&starting_date=${this.state.start_date}&ending_date=${this.state.end_date}`
-			}
+			var base = "https://young-meadow-84276.herokuapp.com"
+			var endpt = `/get_ranking_history?player_id=${player_ids[idx]}&starting_age=${start}&ending_age=${end}`
 			const response = await fetch(base + endpt);
 			const data = await response.json();
-			console.log(data)
+			var dates = data['data'].map(x => x['date'])
+			var ranks = data['data'].map(x => x['rank'])
+			var labels = data['data'].map(x => x['age'])
+			var values = this.pad_ranks_age(ranks, dates, labels, start, end)
+			var padded_ranks = values[0]
+			var padded_dates = values[1]
+			var new_dataset = this.create_dataset(padded_ranks, padded_dates, player_names[idx], player_ids[idx], old_colors[idx])
+			new_datasets.push(new_dataset)
 			request(idx + 1)
 		}
-
 		request(0)
 	}
 
-	get_labels(start_yr, end_yr) {
+	get_labels_age(start_yr, end_yr) {
 		if (start_yr >= end_yr) {
 			return []
 		}
@@ -57,6 +97,88 @@ class Graph extends React.Component {
 			start = start + (1/96)
 		}
 		return labels
+	}
+
+	pad_ranks_date(labels, dates, ranks) {
+		var new_ranks = Array(labels.length).fill(null)
+		var new_dates = Array(labels.length).fill(null)
+		var date_idx = 0
+		for (var label_idx = 0; label_idx < labels.length; label_idx++) {
+			if (date_idx >= dates.length) {
+				return [new_ranks, new_dates]
+			} else if (dates[date_idx]['yr'] == labels[label_idx]['yr']
+				&& dates[date_idx]['mo'] == labels[label_idx]['mo']
+				&& dates[date_idx]['day'] == labels[label_idx]['day']) {
+				new_ranks[label_idx] = ranks[date_idx]
+				new_dates[label_idx] = dates[date_idx]
+				date_idx += 1
+			}
+		}
+		return [new_ranks, new_dates]
+	}
+
+
+	getDateRange(val, min_max) {
+
+		var old_colors = this.state.datasets.map(x => x['data']['backgroundColor'])
+		var player_ids = this.state.datasets.map(x => x['player_id'])
+		var player_names = this.state.datasets.map(x => x['player_name'])
+
+		var base = ""
+		var new_datasets = []
+		var new_labels;
+
+		var start = this.state.start_date
+		var end = this.state.end_date
+		if (min_max == "max") {
+			end = val.toString() + "0101"
+		} else if (min_max == "min") {
+			start = val.toString() + "0101"
+		}
+
+		console.log(start, end)
+
+		const request = async(idx) => {
+			if (idx >= this.state.datasets.length) {
+				this.setState({
+					datasets: new_datasets,
+					labels: new_labels,
+					start_date: start,
+					end_date: end,
+					dimension: 'date'
+				})
+				return
+			}
+			else if (idx == -1) {
+				let labels_enpt = `/get_ranking_dates_between?starting_date=${start}&ending_date=${end}`
+				let labels_response = await fetch(base + labels_enpt)
+				const labels_data = await labels_response.json();
+				new_labels = labels_data['data']
+				console.log(new_labels)
+			} else {
+				var player_id = this.state.datasets[idx]['player_id']
+				var endpt = `/get_ranking_history_date?player_id=${player_id}&starting_date=${start}&ending_date=${end}`;
+				const response = await fetch(base + endpt);
+				const data = await response.json();
+				console.log(data)
+				var ranks = data['data'].map(x => x['rank'])
+				var dates = data['data'].map(x => x['date'])
+				var values = this.pad_ranks_date(new_labels, dates, ranks)
+				var new_dataset = this.create_dataset(values[0], values[1], player_names[idx], player_ids[idx], old_colors[idx])
+				new_datasets.push(new_dataset)
+			}
+			request(idx + 1)
+		}
+
+		request(-1)
+	}
+
+	change_dimension(dimension) {
+		if (dimension == "age") {
+			this.getAgeRange()
+		} else {
+			this.getDateRange()
+		}
 	}
 
 	static colors = [
@@ -152,50 +274,6 @@ class Graph extends React.Component {
 		return fetch(base + endpt)
 	}
 
-	changeAgeRange(val, min_max) {
-		// if any part of the interval of the new range is in the old range,
-		// then we don't necessarily need to refetch this data. but for now
-		// to keep things simple, just refetch everything
-		var old_colors = this.state.datasets.map(x => x['data']['backgroundColor'])
-		var player_ids = this.state.datasets.map(x => x['player_id'])
-		var player_names = this.state.datasets.map(x => x['player_name'])
-		var new_datasets = [];
-		var start = this.state.start_age
-		var end = this.state.end_age
-		if (min_max == "max") {
-			end = val
-		} else {
-			start = val
-		}
-		var new_labels = this.get_labels(start, end)
-
-		const request = async(idx) => {
-			if (idx >= player_ids.length) {
-				this.setState({
-					datasets: new_datasets,
-					labels: new_labels,
-					start_age: start,
-					end_age: end
-				})
-				return
-			}
-			var base = "https://young-meadow-84276.herokuapp.com"
-			var endpt = `/get_ranking_history?player_id=${player_ids[idx]}&starting_age=${start}&ending_age=${end}`
-			const response = await fetch(base + endpt);
-			const data = await response.json();
-			var dates = data['data'].map(x => x['date'])
-			var ranks = data['data'].map(x => x['rank'])
-			var labels = data['data'].map(x => x['age'])
-			var values = this.pad_ranks(ranks, dates, labels, start, end)
-			var padded_ranks = values[0]
-			var padded_dates = values[1]
-			var new_dataset = this.create_dataset(padded_ranks, padded_dates, player_names[idx], player_ids[idx], old_colors[idx])
-			new_datasets.push(new_dataset)
-			request(idx + 1)
-		}
-		request(0)
-	}
-
 	removePlayer(player_id) {
 		var new_available_colors = this.state.available_colors;
 		for (var i = 0; i < this.state.datasets.length; i++) {
@@ -218,24 +296,6 @@ class Graph extends React.Component {
 		return this.state.available_colors[0]
 	}
 
-	pad_ranks(ranks, dates, labels, start, end) {
-		var new_ranks = Array(Math.max(end - start, 0) * 96).fill(null)
-		var new_dates = Array(Math.max(end - start, 0) * 96).fill(null)
-		for (var i = 0; i < labels.length; i++) {
-			if (labels[i] < start || labels[i] > end) {
-				continue
-			}
-			var idx = Math.floor((labels[i] - start) / (1/96))
-			new_dates[idx] = dates[i]
-			if (new_ranks[idx] === null) {
-				new_ranks[idx] = ranks[i]
-			} else {
-				new_ranks[idx] = Math.min(new_ranks[idx], ranks[i])
-			}
-		}
-		return [new_ranks, new_dates]
-	}
-
 	addPlayer(player_id, player_name) {
 
 		// first check to see if this player has already been added
@@ -249,7 +309,7 @@ class Graph extends React.Component {
 			var ranks = data['data'].map(x => x['rank'])
 			var dates = data['data'].map(x => x['date'])
 			var labels = data['data'].map(x => x['age'])
-			var values = this.pad_ranks(ranks, dates, labels, this.state.start_age, this.state.end_age)
+			var values = this.pad_ranks_age(ranks, dates, labels, this.state.start_age, this.state.end_age)
 			var padded_ranks = values[0]
 			var padded_dates = values[1]
 			var new_dataset = this.create_dataset(padded_ranks, padded_dates, player_name, player_id, color)
@@ -359,9 +419,6 @@ class Graph extends React.Component {
 		var box_height = 300
 		var box_width = 500
 
-		// console.log(x, y)
-		// console.log(width, height)
-
 		if (x > width / 2) {
 			// bottom right
 			if (y > height / 2) {
@@ -402,6 +459,49 @@ class Graph extends React.Component {
 		}))
 	}
 
+	tick_callback(value) {
+		if (this.state.dimension == "age") {
+			return this.age_tick_callback(value)
+		} else {
+			return this.date_tick_callback(value)
+		}
+	}
+
+	date_tick_callback(value) {
+		var months = {1: 'Jan', 2: 'Feb', 3: 'Mar', 4:'Apr', 5:'May', 6: 'Jun', 7: 'Jul', 
+					8: 'Aug', 9: 'Sep', 10: 'Oct', 11: 'Nov', 12: 'Dec'}
+		return months[value['mo']] + " " + value['yr']
+	}
+
+
+	age_tick_callback(value) {
+		var get_month = (val) => {
+			val = val - Math.floor(val)
+			return Math.ceil(12 * val)
+		}
+		var diff = this.state.end_age - this.state.start_age
+		if (diff > 5) {
+			return Math.floor(value).toString()
+		} else {
+			var mo = get_month(value)
+			if (mo == 0) {
+				return Math.floor(value).toString()
+			} else {
+				return Math.floor(value).toString() + "." + mo.toString()
+			}
+		}
+	}
+
+	max_ticks() {
+		var diff = this.state.end_age - this.state.start_age
+
+		if (diff > 5) {
+			return Math.floor(diff)
+		} else {
+			return 10
+		}
+	}
+
 	render() {
 
 		const datasets = this.state.datasets.map(x => x['data'])
@@ -431,26 +531,9 @@ class Graph extends React.Component {
 						display: true
 					},
 					ticks: {
-						maxTicksLimit: max_ticks,
+						maxTicksLimit: this.max_ticks(),
 						autoSkip: true,
-						callback: function(value, index, values) {
-
-							var get_month = (val) => {
-								val = val - Math.floor(val)
-								return Math.ceil(12 * val)
-							}
-
-							if (diff > 5) {
-								return Math.floor(value).toString()
-							} else {
-								var mo = get_month(value)
-								if (mo == 0) {
-									return Math.floor(value).toString()
-								} else {
-									return Math.floor(value).toString() + "." + mo.toString()
-								}
-							}
-						}
+						callback: (value, index, values) => this.tick_callback(value, index, values)
 					}
 				}]
 			},
