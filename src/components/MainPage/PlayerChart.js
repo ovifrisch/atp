@@ -1,12 +1,11 @@
 import React from 'react';
 import ChartComponent, {Chart, Line} from 'react-chartjs-2';
 import MatchInfo from './MatchInfo'
-import './styles/Graph.css'
-import {addPlayer} from './graph_helpers'
+import './styles/PlayerChart.css'
 import {endpt_base} from '../../GlobalConstants'
-import {default_colors} from './GraphConstants'
+import {default_colors} from './ChartConstants'
 
-class Graph extends React.Component {
+class PlayerChart extends React.Component {
 	constructor(props) {
 		console.log(process.env)
 		super(props)
@@ -624,4 +623,4 @@ class Graph extends React.Component {
 	}
 }
 
-export default Graph;
+export default PlayerChart;

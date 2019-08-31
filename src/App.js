@@ -1,7 +1,7 @@
 import React from 'react';
 import './App.css';
 import Header from "./components/Header"
-import AgeComparison from "./components/AgeComparison/AgeComparison"
+import MainPage from "./components/MainPage/MainPage"
 import Head2Head from "./components/Head2Head/Head2Head"
 import {
   HashRouter,
@@ -15,7 +15,7 @@ function App() {
       <Header />
       <HashRouter>
         <Switch>
-          <Route exact path="/" component={AgeComparison} />
+          <Route exact path="/" component={MainPage} />
           <Route path="/h2h" component={Head2Head} />
         </Switch>
       </HashRouter>

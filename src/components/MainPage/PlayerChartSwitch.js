@@ -2,10 +2,10 @@ import React from 'react';
 import Switch from '@material-ui/core/Switch';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import './styles/GraphSwitch.css'
+import './styles/PlayerChartSwitch.css'
 
 
-class GraphSwitch extends React.Component {
+class PlayerChartSwitch extends React.Component {
 	constructor(props) {
 		super(props)
 	}
@@ -38,4 +38,4 @@ class GraphSwitch extends React.Component {
 }
 
 
-export default GraphSwitch;
+export default PlayerChartSwitch;
