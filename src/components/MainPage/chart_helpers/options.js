@@ -72,9 +72,9 @@ function get_options(me) {
 					display: true
 				},
 				ticks: {
-					maxTicksLimit: max_ticks(me.state.window.left.age, me.state.window.right.age),
+					maxTicksLimit: max_ticks(me.state.window_left_age, me.state.window_right_age),
 					autoSkip: true,
-					callback: (value, index, values) => tick_callback(value, me.state.x_axis, me.state.window.left.age, me.state.window.right.age)
+					callback: (value, index, values) => tick_callback(value, me.state.x_axis, me.state.window_left_age, me.state.window_right_age)
 				}
 			}]
 		},

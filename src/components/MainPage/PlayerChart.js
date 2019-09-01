@@ -16,16 +16,10 @@ class PlayerChart extends React.Component {
 		super(props)
 		this.info_box = React.createRef()
 		this.state = {
-			window: {
-				left: {
-					age: 20,
-					date: '20100101'
-				},
-				right: {
-					age: 30,
-					date: '20200101'
-				}
-			},
+			window_left_age: 20,
+			window_left_date: '20100101',
+			window_right_age: 30,
+			window_right_date: '20200101',
 			x_axis: 'date',
 			y_axis: 'rank',
 			x_data: [],
@@ -40,8 +34,8 @@ class PlayerChart extends React.Component {
 	componentDidMount() {
 		const init_x_axis = async() => {
 			var x_axis =  await db.get_dates(
-				this.state.window.left.date,
-				this.state.window.right.date
+				this.state.window_left_date,
+				this.state.window_right_date
 			)
 			this.setState({
 				x_data: x_axis
@@ -73,8 +67,8 @@ class PlayerChart extends React.Component {
 		if (this.state.x_axis == 'age') {
 			getYByAge(
 				this,
-				this.state.window.left.age,
-				this.state.window.right.age,
+				this.state.window_left_age,
+				this.state.window_right_age,
 				this.state.y_axis,
 				player_info,
 				this.state.y_data
@@ -82,8 +76,8 @@ class PlayerChart extends React.Component {
 		} else if (this.state.x_axis == 'date') {
 			getYByDate(
 				this,
-				this.state.window.left.date,
-				this.state.window.right.date,
+				this.state.window_left_date,
+				this.state.window_right_date,
 				this.state.y_axis,
 				player_info,
 				this.state.y_data
@@ -122,11 +116,11 @@ class PlayerChart extends React.Component {
 		var left;
 		var right;
 		if (dimension == 'age') {
-			left = this.state.window.left.age
-			right = this.state.window.right.age
+			left = this.state.window_left_age
+			right = this.state.window_right_age
 		} else if (dimension == 'date') {
-			left = this.state.window.left.date
-			right = this.state.window.right.date
+			left = this.state.window_left_date
+			right = this.state.window_right_date
 		}
 		if (min_max == 'min') {
 			left = new_val
@@ -134,7 +128,15 @@ class PlayerChart extends React.Component {
 			right = new_val
 		}
 
+		console.log(left, right)
+
 		if (dimension == 'age') {
+
+			this.setState({
+				window_left_age: left,
+				window_right_age: right
+			})
+
 			getYByAge(
 				this,
 				left,
@@ -144,6 +146,12 @@ class PlayerChart extends React.Component {
 				[]
 			)
 		} else if (dimension == 'date') {
+
+			this.setState({
+				window_left_date: left,
+				window_right_date: right
+			})
+
 			getYByDate(
 				this,
 				left,
