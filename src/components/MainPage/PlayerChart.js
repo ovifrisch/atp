@@ -4,6 +4,7 @@ import MatchInfo from './MatchInfo'
 import './styles/PlayerChart.css'
 import {endpt_base} from '../../GlobalConstants'
 import {default_colors} from './ChartConstants'
+import {db} from './chart_api_calls.js'
 
 class PlayerChart extends React.Component {
 	constructor(props) {
@@ -20,7 +21,6 @@ class PlayerChart extends React.Component {
 			highlight_data_idx: -1,
 			highlight_idx1: 0,
 			highlight_idx2: 0,
-			match_data: [],
 			dimension: 'age'
 		}
 	}
@@ -49,7 +49,7 @@ class PlayerChart extends React.Component {
 		// to keep things simple, just refetch everything
 		var old_colors = this.state.datasets.map(x => x['data']['backgroundColor'])
 		var player_ids = this.state.datasets.map(x => x['player_id'])
-		var player_names = this.state.datasets.map(x => x['player_name'])
+		var player_names = this.state.datasets.map(x => x['data']['label'])
 		var new_datasets = [];
 		var start = this.state.start_age
 		var end = this.state.end_age
@@ -182,7 +182,7 @@ class PlayerChart extends React.Component {
 
 		var old_colors = this.state.datasets.map(x => x['data']['backgroundColor'])
 		var player_ids = this.state.datasets.map(x => x['player_id'])
-		var player_names = this.state.datasets.map(x => x['player_name'])
+		var player_names = this.state.datasets.map(x => x['data']['label'])
 
 		var new_datasets = []
 		var new_labels;
@@ -207,9 +207,8 @@ class PlayerChart extends React.Component {
 				return
 			}
 			else if (idx == -1) {
-				let labels_enpt = `/get_ranking_dates_between?starting_date=${start}&ending_date=${end}`
-				let labels_response = await fetch(endpt_base + labels_enpt)
-				new_labels = await labels_response.json();
+				new_labels = await this.db.get_dates(start, end)
+				console.log(new_labels)
 			} else {
 				var player_id = this.state.datasets[idx]['player_id']
 				var endpt = `/get_ranking_history_date?player_id=${player_id}&starting_date=${start}&ending_date=${end}`;
@@ -244,7 +243,6 @@ class PlayerChart extends React.Component {
 		var res =
 		{
 			data: {
-				my_id: player_id,
 				label: player_name,
 				spanGaps: true,
 				fill: false,
@@ -268,8 +266,7 @@ class PlayerChart extends React.Component {
 				data: ranks,
 			},
 			dates: dates,
-			player_id: player_id,
-			player_name: player_name
+			player_id: player_id
 		}
 
 		return res
@@ -619,5 +616,7 @@ class PlayerChart extends React.Component {
 		)
 	}
 }
+
+PlayerChart.prototype.db = db
 
 export default PlayerChart;

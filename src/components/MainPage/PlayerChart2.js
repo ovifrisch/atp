@@ -2,7 +2,8 @@ import React from 'react';
 import ChartComponent, {Chart, Line} from 'react-chartjs-2';
 import MatchInfo from './MatchInfo'
 import './styles/Graph.css'
-import './graph_helpers'
+import {default_colors} from './ChartConstants'
+import {db} from './chart_api_calls.js'
 
 class PlayerChart2 extends React.Component {
 	constructor(props) {
@@ -19,7 +20,12 @@ class PlayerChart2 extends React.Component {
 			},
 			x_axis: 'date',
 			y_axis: 'rank',
-			x_data: this.get_dates(20, 30)
+			x_data: await this.db.get_dates(20, 30),
+			y_data: [],
+			available_colors: default_colors,
+			highlight_data_idx: -1,
+			highlight_idx1: 0,
+			highlight_idx2: 0
 		}
 	}
 
@@ -63,7 +69,24 @@ class PlayerChart2 extends React.Component {
 
 	render() {
 
+		const data = {
+			labels: this.state.x_data,
+			datasets: 
+		}
+
+		return (
+			<div id='the_chart2'>
+				<ChartComponent
+						type='myLine'
+						ref="graph"
+						data={data}
+						options={options}
+					/>
+			</div>
+		)
 	}
 }
+
+PlayerChart2.prototype.db = db
 
 export default PlayerChart2;
