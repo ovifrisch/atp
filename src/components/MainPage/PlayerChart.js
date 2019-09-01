@@ -4,7 +4,9 @@ import MatchInfo from './MatchInfo'
 import './styles/PlayerChart.css'
 import {endpt_base} from '../../GlobalConstants'
 import {default_colors} from './ChartConstants'
-import {db} from './chart_api_calls.js'
+import db from './chart_api_calls.js'
+import create_dataset from './chart_helpers/create_dataset'
+import get_options from './chart_helpers/options'
 
 class PlayerChart extends React.Component {
 	constructor(props) {
@@ -239,39 +241,6 @@ class PlayerChart extends React.Component {
 		return 'rgba(' + o(r()*s) + ',' + o(r()*s) + ',' + o(r()*s) + ',' + 1 + ')';
 	}
 
-	create_dataset(ranks, dates, player_name, player_id, color) {
-		var res =
-		{
-			data: {
-				label: player_name,
-				spanGaps: true,
-				fill: false,
-				lineTension: 0.1,
-				backgroundColor: color,
-				borderColor: color,
-				borderWidth: 3,
-				borderCapStyle: 'butt',
-				borderDash: [],
-				borderDashOffset: 0.0,
-				borderJoinStyle: 'miter',
-				pointBorderColor: color,
-				pointBackgroundColor: '#fff',
-				pointBorderWidth: 4,
-				pointHoverRadius: 7,
-				pointHoverBackgroundColor: color,
-				pointHoverBorderColor: 'rgba(220,220,220,1)',
-				pointHoverBorderWidth: 1,
-				pointRadius: 1,
-				pointHitRadius: 1,
-				data: ranks,
-			},
-			dates: dates,
-			player_id: player_id
-		}
-
-		return res
-	}
-
 	// http GET to flask api to fetch ranking history of player with id=p_id between ages of s and e
 	fetch_ranking_history(p_id, s, e) {
 		var endpt = `/get_ranking_history?player_id=${p_id}&starting_age=${s}&ending_age=${e}`
@@ -470,49 +439,6 @@ class PlayerChart extends React.Component {
 		}))
 	}
 
-	tick_callback(value) {
-		if (this.state.dimension == "age") {
-			return this.age_tick_callback(value)
-		} else {
-			return this.date_tick_callback(value)
-		}
-	}
-
-	date_tick_callback(value) {
-		var months = {1: 'Jan', 2: 'Feb', 3: 'Mar', 4:'Apr', 5:'May', 6: 'Jun', 7: 'Jul', 
-					8: 'Aug', 9: 'Sep', 10: 'Oct', 11: 'Nov', 12: 'Dec'}
-		return months[value['mo']] + " " + value['yr']
-	}
-
-
-	age_tick_callback(value) {
-		var get_month = (val) => {
-			val = val - Math.floor(val)
-			return Math.ceil(12 * val)
-		}
-		var diff = this.state.end_age - this.state.start_age
-		if (diff > 5) {
-			return Math.floor(value).toString()
-		} else {
-			var mo = get_month(value)
-			if (mo == 0) {
-				return Math.floor(value).toString()
-			} else {
-				return Math.floor(value).toString() + "." + mo.toString()
-			}
-		}
-	}
-
-	max_ticks() {
-		var diff = this.state.end_age - this.state.start_age
-
-		if (diff > 5) {
-			return Math.floor(diff)
-		} else {
-			return 10
-		}
-	}
-
 	render() {
 
 		const datasets = this.state.datasets.map(x => x['data'])
@@ -525,46 +451,13 @@ class PlayerChart extends React.Component {
 			max_ticks = 10
 		}
 
-		var g = this.refs['graph']
-
-		const options = {
-
-			scales: {
-				yAxes: [{
-					scaleLabel: {
-						labelString: "Ranking",
-						display: true
-					}
-				}],
-				xAxes: [{
-					scaleLabel: {
-						labelString: "Age",
-						display: true
-					},
-					ticks: {
-						maxTicksLimit: this.max_ticks(),
-						autoSkip: true,
-						callback: (value, index, values) => this.tick_callback(value, index, values)
-					}
-				}]
-			},
-
-			tooltips: {
-				enabled: false
-			},
-
-			legend: {
-				onClick: (e) => e.stopPropagation(),
-				display: false
-			},
-
-			onHover: (e, data) => this.handle_hover(e, data)
-		}
-
 		const data = {
 			labels: this.state.labels,
 			datasets: datasets
 		};
+
+		const options = get_options(this)
+
 		var the_obj = this
 
 		Chart.controllers.myLine = Chart.controllers.line.extend({
@@ -618,5 +511,7 @@ class PlayerChart extends React.Component {
 }
 
 PlayerChart.prototype.db = db
+PlayerChart.prototype.create_dataset = create_dataset
+PlayerChart.prototype.get_options = get_options
 
 export default PlayerChart;

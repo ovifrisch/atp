@@ -1,6 +1,7 @@
 import React from 'react';
 import CurrentPlayers from "./CurrentPlayers"
 import PlayerChart from "./PlayerChart"
+import PlayerChart2 from "./PlayerChart2"
 import PlayerSelector from "./PlayerSelector"
 import AgeSlider from "./DimensionSlider"
 import PlayerChartSwitch from './PlayerChartSwitch'
@@ -53,7 +54,7 @@ class MainPage extends React.Component {
 				</div>
 
 				<div id="chart_and_slider">
-					<PlayerChart
+					<PlayerChart2
 						ref={this.graph}
 					/>
 					<AgeSlider

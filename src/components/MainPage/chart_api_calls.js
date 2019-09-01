@@ -1,6 +1,6 @@
 import {endpt_base} from '../../GlobalConstants'
 
-export var db = {
+var db = {
 
 	// get the ranking dates in asc order between these two dates
 	get_dates: (min, max) => {
@@ -16,3 +16,6 @@ export var db = {
 		}))
 	}
 }
+
+
+export default db;
