@@ -73,7 +73,7 @@ function get_options(me) {
 			display: false
 		},
 
-		onHover: (e, data) => me.handle_hover(e, data)
+		onHover: (event, data) => me.handle_hover(me, event, data)
 	}
 	return options
 }

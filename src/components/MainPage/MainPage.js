@@ -54,7 +54,7 @@ class MainPage extends React.Component {
 				</div>
 
 				<div id="chart_and_slider">
-					<PlayerChart2
+					<PlayerChart
 						ref={this.graph}
 					/>
 					<AgeSlider

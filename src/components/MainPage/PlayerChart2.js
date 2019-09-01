@@ -6,6 +6,7 @@ import {default_colors} from './ChartConstants'
 import db from './chart_api_calls.js'
 import create_dataset from './chart_helpers/create_dataset'
 import get_options from './chart_helpers/options'
+import handle_hover from './chart_helpers/segment_hover'
 
 class PlayerChart2 extends React.Component {
 	constructor(props) {
@@ -111,6 +112,7 @@ class PlayerChart2 extends React.Component {
 PlayerChart2.prototype.db = db
 PlayerChart2.prototype.get_options = get_options
 PlayerChart2.prototype.create_dataset = create_dataset
+PlayerChart2.prototype.handle_hover = handle_hover
 
 
 export default PlayerChart2;

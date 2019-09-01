@@ -7,6 +7,7 @@ import {default_colors} from './ChartConstants'
 import db from './chart_api_calls.js'
 import create_dataset from './chart_helpers/create_dataset'
 import get_options from './chart_helpers/options'
+import handle_hover from './chart_helpers/segment_hover'
 
 class PlayerChart extends React.Component {
 	constructor(props) {
@@ -302,142 +303,7 @@ class PlayerChart extends React.Component {
 		return this.state.available_colors[0]
 	}
 
-	collinear(x1, y1, x2, y2, x3, y3) {
-		return Math.abs(((y1 - y2) * (x1 - x3)) - ((y1 - y3) * (x1 - x2)))
-	}
-	// 
-	// such that these x and y coordinates are collinear with those
-	/*
-	find (if any) the two consecutive data points in any of the datasets
-	such that these x and y coordinates are collinear with those point
-	AND x lies beteen p1.x and p2.x.
-	if none, return null
-	*/
-	get_segment_intersection(chart, x, y) {
-		var e1 = 1 // slack for x
-		var e2 = 300 // slack for collineariy measure
-		for (var i = 0; i < this.state.datasets.length; i++) {
-			var nodes = chart.getDatasetMeta(i)['data']
-			nodes = nodes.filter(x => x['_model']['skip'] == false)
-			for (var j = 0; j < nodes.length - 1; j++) {
-				var start_x = nodes[j]['_model']['x']
-				var start_y = nodes[j]['_model']['y']
-				var end_x = nodes[j + 1]['_model']['x']
-				var end_y = nodes[j + 1]['_model']['y']
-				if (x < (start_x - e1) || x > (end_x + e1)) {
-					continue
-				}
-				var collinearity = this.collinear(x, y, start_x, start_y, end_x, end_y)
-				if (collinearity < e2) {
-					return {'data_idx': nodes[j]['_datasetIndex'], 'i1':nodes[j]['_index'], 'i2':nodes[j+1]['_index']}
-				}
-			}
-		}
-		return null
-	}
-
-	highlight_segment(data_idx, i1, i2) {
-		this.setState({
-			highlight_data_idx: data_idx,
-			highlight_idx1: i1,
-			highlight_idx2: i2
-		})
-	}
-
-	// called whenever the user hovers any part of the chart
-	handle_hover(e, data) {
-		var chart = this.refs['graph']['chartInstance']
-		var x_pos = e['layerX']
-		var y_pos = e['layerY']
-
-		var indices = this.get_segment_intersection(chart, x_pos, y_pos)
-
-		// not hovering a segment
-		if (indices === null) {
-
-			// was previously hovering a segment
-			if (this.state.highlight_data_idx !== -1) {
-				this.setState({
-					highlight_data_idx: -1,
-					highlight_idx1: 0,
-					highlight_idx2: 0
-				})
-				document.getElementById("the_table").setAttribute("style", "display:none")
-			}
-			return
-
-		// hovering a segment, was previously hovering it
-		} else if (this.state.highlight_data_idx !== -1) {
-			// same highlight segment
-			if (indices['i1'] == this.state.highlight_idx1 && indices['i2'] == this.state.highlight_idx2) {
-				return
-			} else {
-				document.getElementById("the_table").setAttribute("style", "display:none")
-			}
-		}
-
-		// hovering a segment, just started hovering it
-		this.highlight_segment(indices['data_idx'], indices['i1'], indices['i2'])
-		this.fetch_and_process_match_data(indices['data_idx'], indices['i1'], indices['i2'], x_pos, y_pos)
-	}
-
-	rgb2hex(rgb){
-		rgb = rgb.match(/^rgba?[\s+]?\([\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?/i);
-		return (rgb && rgb.length === 4) ? "#" +
-		("0" + parseInt(rgb[1],10).toString(16)).slice(-2) +
-		("0" + parseInt(rgb[2],10).toString(16)).slice(-2) +
-		("0" + parseInt(rgb[3],10).toString(16)).slice(-2) : '';
-	}
-
-	position_box(x, y) {
-		// position the box based on the quadrant of the hover point
-		// relative to the chart
-		var canvas = this.refs['graph']['chartInstance']['canvas']
-		var height = canvas['clientHeight']
-		var width = canvas['clientWidth']
-		//CHANGE DIMS HERE IF YOU CHANGE BOX WIDTH OR HEIGHT
-		var box_height = 300
-		var box_width = 500
-
-		if (x > width / 2) {
-			// bottom right
-			if (y > height / 2) {
-				return [x - box_width, y - box_height]
-			
-			// top right
-			} else {
-				return [x - box_width, y]
-			}
-		} else {
-			// bottom left
-			if (y > height / 2) {
-				return [x, y - box_height]
-
-			// top left
-			} else {
-				return [x, y]
-			}
-		}
-	}
-
-	display_match_data(data) {
-		this.info_box.current.set_match_data(data)
-	}
-
-	fetch_and_process_match_data(data_idx, i1, i2, x, y) {
-		// first display the loading icon in the box
-		var color = this.state.datasets[data_idx]['data']['borderColor']
-		this.info_box.current.set_loading(color)
-		var box_positions = this.position_box(x, y)
-		document.getElementById("the_table").setAttribute("style", `display:block; left:${box_positions[0]}px; top:${box_positions[1]}px; border: 10px solid ${this.rgb2hex(color)}`)
-		var player_id = this.state.datasets[data_idx]['player_id']
-		var left_date = this.state.datasets[data_idx]['dates'][i1]
-		var right_date = this.state.datasets[data_idx]['dates'][i2]
-		var promise = this.fetch_significant_matches(player_id, left_date, right_date)
-		promise.then(response => response.json().then(data => {
-			this.display_match_data(data, x, y, color)
-		}))
-	}
+	
 
 	render() {
 
@@ -513,5 +379,6 @@ class PlayerChart extends React.Component {
 PlayerChart.prototype.db = db
 PlayerChart.prototype.create_dataset = create_dataset
 PlayerChart.prototype.get_options = get_options
+PlayerChart.prototype.handle_hover = handle_hover
 
 export default PlayerChart;
