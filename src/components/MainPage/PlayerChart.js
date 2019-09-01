@@ -9,7 +9,7 @@ import get_options from './chart_helpers/options'
 import getYByAge from './chart_helpers/fetch_by_age'
 import getYByDate from './chart_helpers/fetch_by_date'
 import get_color from './chart_helpers/color_generator'
-import extended_line from './chart_helpers/extended_line'
+import extend_line from './chart_helpers/extended_line'
 
 class PlayerChart extends React.Component {
 	constructor(props) {
@@ -105,7 +105,7 @@ class PlayerChart extends React.Component {
 	}
 
 	/*
-	change the range of the xdimension
+	change the range or metric of the xdimension
 	*/
 	changeXDimension(dimension, min_max, new_val) {
 		var player_info = {
@@ -127,8 +127,6 @@ class PlayerChart extends React.Component {
 		} else if (min_max == 'max') {
 			right = new_val
 		}
-
-		console.log(left, right)
 
 		if (dimension == 'age') {
 
@@ -173,8 +171,7 @@ class PlayerChart extends React.Component {
 
 	render() {
 
-		extended_line(this)
-
+		extend_line(this)
 		const options = get_options(this)
 		const data = {
 			labels: this.state.x_data,

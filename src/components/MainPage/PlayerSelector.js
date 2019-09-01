@@ -45,9 +45,8 @@ class PlayerSelector extends React.Component {
 			var base = "https://young-meadow-84276.herokuapp.com"
 			fetch(base + "/topTenPlayers").then(response => 
 			response.json().then(data => {
-				console.log(data)
 				this.setState({
-					players: this.convert_data(data['data']),
+					players: this.convert_data(data),
 					loading: false
 				})
 			}))
@@ -56,9 +55,8 @@ class PlayerSelector extends React.Component {
 			var base = "https://young-meadow-84276.herokuapp.com"
 			fetch(base + `/topTenFiltered?prefix=${filter}`).then(response =>
 			response.json().then(data => {
-				console.log(data)
 				this.setState({
-					players: this.convert_data(data['data']),
+					players: this.convert_data(data),
 					loading: false
 				})
 			}))
