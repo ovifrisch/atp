@@ -42,19 +42,33 @@ function max_ticks(start_age, end_age) {
 	}
 }
 
+function get_yLabel(me) {
+	if (me.state.y_axis == 'rank') {
+		return "Ranking"
+	}
+}
+
+function get_xLabel(me) {
+	if (me.state.x_axis == 'date') {
+		return "Date"
+	} else if (me.state.x_axis == 'age') {
+		return "Age"
+	}
+}
+
 function get_options(me) {
 	console.log(me)
 	var options = {
 		scales: {
 			yAxes: [{
 				scaleLabel: {
-					labelString: "Ranking",
+					labelString: get_yLabel(me),
 					display: true
 				}
 			}],
 			xAxes: [{
 				scaleLabel: {
-					labelString: "Age",
+					labelString: get_xLabel(me),
 					display: true
 				},
 				ticks: {
