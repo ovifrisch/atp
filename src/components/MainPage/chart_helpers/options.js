@@ -1,3 +1,4 @@
+import handle_hover from './segment_hover'
 
 function age_tick_callback(value, start_age, end_age) {
 
@@ -57,9 +58,9 @@ function get_options(me) {
 					display: true
 				},
 				ticks: {
-					maxTicksLimit: max_ticks(me.state.start_age, me.state.end_age),
+					maxTicksLimit: max_ticks(me.state.window.left.age, me.state.window.right.age),
 					autoSkip: true,
-					callback: (value, index, values) => tick_callback(value, me.state.dimension, me.state.start_age, me.state.end_age)
+					callback: (value, index, values) => tick_callback(value, me.state.x_axis, me.state.window.left.age, me.state.window.right.age)
 				}
 			}]
 		},
@@ -73,7 +74,7 @@ function get_options(me) {
 			display: false
 		},
 
-		onHover: (event, data) => me.handle_hover(me, event, data)
+		onHover: (event, data) => handle_hover(me, event, data)
 	}
 	return options
 }

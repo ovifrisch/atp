@@ -1,4 +1,4 @@
-
+import db from './api_calls'
 
 function collinear(x1, y1, x2, y2, x3, y3) {
 	return Math.abs(((y1 - y2) * (x1 - x3)) - ((y1 - y3) * (x1 - x2)))
@@ -49,16 +49,16 @@ function rgb2hex(rgb){
 
 function fetch_and_process_match_data(me, data_idx, i1, i2, x, y) {
 	// first display the loading icon in the box
-	var color = me.state.datasets[data_idx]['data']['borderColor']
+	var color = me.state.y_data[data_idx]['data']['borderColor']
 	me.info_box.current.set_loading(color)
 	var box_positions = position_box(me, x, y)
 	document.getElementById("the_table").setAttribute("style", `display:block; left:${box_positions[0]}px; top:${box_positions[1]}px; border: 10px solid ${rgb2hex(color)}`)
-	var player_id = me.state.datasets[data_idx]['player_id']
-	var left_date = me.state.datasets[data_idx]['dates'][i1]
-	var right_date = me.state.datasets[data_idx]['dates'][i2]
+	var player_id = me.state.y_data[data_idx]['player_id']
+	var left_date = me.state.y_data[data_idx]['dates'][i1]
+	var right_date = me.state.y_data[data_idx]['dates'][i2]
 
 	const set_matches = async() => {
-		var data = await me.db.get_matches(player_id, left_date, right_date)
+		var data = await db.get_matches(player_id, left_date, right_date)
 		display_match_data(me, data, x, y, color)
 	}
 	set_matches()
@@ -83,7 +83,7 @@ function highlight_segment(me, data_idx, i1, i2) {
 function get_segment_intersection(me, chart, x, y) {
 	var e1 = 1 // slack for x
 	var e2 = 300 // slack for collineariy measure
-	for (var i = 0; i < me.state.datasets.length; i++) {
+	for (var i = 0; i < me.state.y_data.length; i++) {
 		var nodes = chart.getDatasetMeta(i)['data']
 		nodes = nodes.filter(x => x['_model']['skip'] == false)
 		for (var j = 0; j < nodes.length - 1; j++) {

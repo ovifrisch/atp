@@ -1,4 +1,4 @@
-import {endpt_base} from '../../GlobalConstants'
+import {endpt_base} from '../../../GlobalConstants'
 
 function date_to_str(date) {
 	var mo;
@@ -26,6 +26,16 @@ function fullpath(path, query_string) {
 	return endpt_base + path + "?" + query_string
 }
 
+function promise(path, params) {
+	return fetch(fullpath(path, query_string(params))).then(
+		response => response.json().then(
+			data => {
+				return data
+			}
+		)
+	)
+}
+
 var db = {
 
 	// get the ranking dates in asc order between these two dates
@@ -35,14 +45,7 @@ var db = {
 			starting_date: min,
 			ending_date: max
 		}
-
-		return fetch(fullpath(path, query_string(params))).then(
-			response => response.json().then(
-				data => {
-					return data
-				}
-			)
-		)
+		return promise(path, params)
 	},
 
 	get_matches: (p_id, date1, date2) => {
@@ -55,15 +58,27 @@ var db = {
 			date1: date1,
 			date2: date2
 		}
+		return promise(path, params)
+	},
 
-		var endpt = `/get_significant_matches?player_id=${p_id}&date1=${date1}&date2=${date2}`
-		return fetch(fullpath(path, query_string(params))).then(
-			response => response.json().then(
-				data => {
-					return data
-				}
-			)
-		)
+	get_rankings_by_age: (p_id, start_age, end_age) => {
+		var path = "/get_ranking_history"
+		var params = {
+			player_id: p_id,
+			starting_age: start_age,
+			ending_age: end_age
+		}
+		return promise(path, params)
+	},
+
+	get_rankings_by_date: (p_id, start_date, end_date) => {
+		var path = "/get_ranking_history_date"
+		var params = {
+			player_id: p_id,
+			starting_date: start_date,
+			ending_date: end_date
+		}
+		return promise(path, params)
 	}
 }
 

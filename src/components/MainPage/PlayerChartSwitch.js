@@ -12,9 +12,9 @@ class PlayerChartSwitch extends React.Component {
 
 	handleChange(checked) {
 		if (checked == false) {
-			this.props.dimension_change_handler("age")
-		} else {
 			this.props.dimension_change_handler("date")
+		} else {
+			this.props.dimension_change_handler("age")
 		}
 	}
 
@@ -23,13 +23,13 @@ class PlayerChartSwitch extends React.Component {
 			<div id="the_switch">
 				<Typography component="div">
 					<Grid component="label" container alignItems="center" spacing={1}>
-						<Grid item>By Age</Grid>
+						<Grid item>By Date</Grid>
 						<Grid item>
 							<Switch
 								onChange = {(event, checked) => {this.handleChange(checked)}}
 							/>
 						</Grid>
-						<Grid item>By Date</Grid>
+						<Grid item>By Age</Grid>
 					</Grid>
 	      		</Typography>
 	      	</div>

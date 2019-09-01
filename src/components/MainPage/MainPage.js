@@ -15,12 +15,12 @@ class MainPage extends React.Component {
 		this.current_players = React.createRef()
 	}
 
-	handle_slider_change_age(val, min_max) {
-		this.graph.current.getAgeRange(val, min_max)
-	}
-
-	handle_slider_change_date(val, min_max) {
-		this.graph.current.getDateRange(val, min_max)
+	handle_slider_change(val, min_max) {
+		this.graph.current.changeXDimension(
+			this.graph.current.state.x_axis,
+			min_max,
+			val
+		)
 	}
 
 	handle_added_player(id, name) {
@@ -34,7 +34,11 @@ class MainPage extends React.Component {
 
 	handle_dimension_change(dimension) {
 		this.dimension_slider.current.change_dimension(dimension)
-		this.graph.current.change_dimension(dimension)
+		this.graph.current.changeXDimension(
+			dimension,
+			null,
+			null
+		)
 	}
 
 	render() {
@@ -54,13 +58,12 @@ class MainPage extends React.Component {
 				</div>
 
 				<div id="chart_and_slider">
-					<PlayerChart
+					<PlayerChart2
 						ref={this.graph}
 					/>
 					<AgeSlider
 						ref = {this.dimension_slider}
-						slider_handler_age={(val, min_max) => this.handle_slider_change_age(val, min_max)}
-						slider_handler_date={(val, min_max) => this.handle_slider_change_date(val, min_max)}
+						slider_handler={(val, min_max) => this.handle_slider_change(val, min_max)}
 					/>
 				</div>
 			</div>

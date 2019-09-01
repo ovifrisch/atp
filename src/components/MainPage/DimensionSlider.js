@@ -7,16 +7,17 @@ class DimensionSlider extends React.Component {
 	constructor(props) {
 		super(props)
 		this.state = {
-			dimension: 'age'
+			dimension: 'date'
 		}
 	}
 
 	change_age(val, min_max) {
-		this.props.slider_handler_age(val, min_max)
+		this.props.slider_handler(val, min_max)
 	}
 
 	change_date(val, min_max) {
-		this.props.slider_handler_date(val, min_max)
+		var new_date = val.toString() + "0101"
+		this.props.slider_handler(new_date, min_max)
 	}
 
 	change_dimension(dimension) {

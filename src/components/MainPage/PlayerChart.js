@@ -4,7 +4,7 @@ import MatchInfo from './MatchInfo'
 import './styles/PlayerChart.css'
 import {endpt_base} from '../../GlobalConstants'
 import {default_colors} from './ChartConstants'
-import db from './chart_api_calls.js'
+import db from './chart_helpers/api_calls.js'
 import create_dataset from './chart_helpers/create_dataset'
 import get_options from './chart_helpers/options'
 import handle_hover from './chart_helpers/segment_hover'
@@ -26,24 +26,6 @@ class PlayerChart extends React.Component {
 			highlight_idx2: 0,
 			dimension: 'age'
 		}
-	}
-
-	pad_ranks_age(ranks, dates, labels, start, end) {
-		var new_ranks = Array(Math.max(end - start, 0) * 96).fill(null)
-		var new_dates = Array(Math.max(end - start, 0) * 96).fill(null)
-		for (var i = 0; i < labels.length; i++) {
-			if (labels[i] < start || labels[i] > end) {
-				continue
-			}
-			var idx = Math.floor((labels[i] - start) / (1/96))
-			new_dates[idx] = dates[i]
-			if (new_ranks[idx] === null) {
-				new_ranks[idx] = ranks[i]
-			} else {
-				new_ranks[idx] = Math.min(new_ranks[idx], ranks[i])
-			}
-		}
-		return [new_ranks, new_dates]
 	}
 
 	getAgeRange(val, min_max) {
@@ -116,6 +98,24 @@ class PlayerChart extends React.Component {
 				new_ranks[label_idx] = ranks[date_idx]
 				new_dates[label_idx] = dates[date_idx]
 				date_idx += 1
+			}
+		}
+		return [new_ranks, new_dates]
+	}
+
+	pad_ranks_age(ranks, dates, labels, start, end) {
+		var new_ranks = Array(this.state.labels.length).fill(null)
+		var new_dates = Array(this.state.labels.length).fill(null)
+		for (var i = 0; i < labels.length; i++) {
+			if (labels[i] < start || labels[i] > end) {
+				continue
+			}
+			var idx = Math.floor((labels[i] - start) / (1/96))
+			new_dates[idx] = dates[i]
+			if (new_ranks[idx] === null) {
+				new_ranks[idx] = ranks[i]
+			} else {
+				new_ranks[idx] = Math.min(new_ranks[idx], ranks[i])
 			}
 		}
 		return [new_ranks, new_dates]
@@ -211,7 +211,6 @@ class PlayerChart extends React.Component {
 			}
 			else if (idx == -1) {
 				new_labels = await this.db.get_dates(start, end)
-				console.log(new_labels)
 			} else {
 				var player_id = this.state.datasets[idx]['player_id']
 				var endpt = `/get_ranking_history_date?player_id=${player_id}&starting_date=${start}&ending_date=${end}`;
