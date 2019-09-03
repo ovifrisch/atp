@@ -1,13 +1,11 @@
 
 
-#the_table {
+#the_paper {
 	position: absolute;
 	display: none;
+	border-radius: 30px !important;
 	left: 0px;
 	top: 0px;
-}
-
-#the_paper {
 	height: 300px;
 	width: 500px;
 	overflow-y: auto;

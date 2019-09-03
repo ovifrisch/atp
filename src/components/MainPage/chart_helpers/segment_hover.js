@@ -52,7 +52,7 @@ function fetch_and_process_match_data(me, data_idx, i1, i2, x, y) {
 	var color = me.state.y_data[data_idx]['data']['borderColor']
 	me.info_box.current.set_loading(color)
 	var box_positions = position_box(me, x, y)
-	document.getElementById("the_table").setAttribute("style", `display:block; left:${box_positions[0]}px; top:${box_positions[1]}px; border: 10px solid ${rgb2hex(color)}`)
+	document.getElementById("the_paper").setAttribute("style", `display:block; left:${box_positions[0]}px; top:${box_positions[1]}px; border: 5px solid ${rgb2hex(color)}`)
 	var player_id = me.state.y_data[data_idx]['player_id']
 	var left_date = me.state.y_data[data_idx]['dates'][i1]
 	var right_date = me.state.y_data[data_idx]['dates'][i2]
@@ -121,7 +121,7 @@ function handle_hover(me, e, data) {
 				highlight_idx1: 0,
 				highlight_idx2: 0
 			})
-			document.getElementById("the_table").setAttribute("style", "display:none")
+			document.getElementById("the_paper").setAttribute("style", "display:none")
 		}
 		return
 
@@ -131,7 +131,7 @@ function handle_hover(me, e, data) {
 		if (indices['i1'] == me.state.highlight_idx1 && indices['i2'] == me.state.highlight_idx2) {
 			return
 		} else {
-			document.getElementById("the_table").setAttribute("style", "display:none")
+			document.getElementById("the_paper").setAttribute("style", "display:none")
 		}
 	}
 

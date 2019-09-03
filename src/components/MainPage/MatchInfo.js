@@ -5,11 +5,12 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
+import Box from '@material-ui/core/Box';
+import Container from '@material-ui/core/Container';
 // import { AutoSizer, Column, Table } from 'react-virtualized';
 import './styles/MatchInfo.css'
 import { css } from '@emotion/core';
 import {RingLoader} from 'react-spinners';
-
 
 class MatchInfo extends React.Component {
 	constructor(props) {
@@ -54,42 +55,38 @@ class MatchInfo extends React.Component {
 			top: 120px;
 		`;
 
+
 		if (this.state.loading == true) {
 			return (
-				<div id="the_table">
-					<Paper id= "the_paper">
-						<RingLoader
-							css={override}
-							color={this.state.color}
-						/>
-					</Paper>
-				</div>	
+				<Paper id= "the_paper">
+					<RingLoader
+						css={override}
+						color={this.state.color}
+					/>
+				</Paper>
 			)
 		} else {
 			return (
-				<div id="the_table">
-					<Paper id= "the_paper">
-						<Table size="small">
-							<TableHead>
-								<TableRow>
-									<TableCell align="left">Tournament</TableCell>
-									<TableCell align="left">Round</TableCell>
-									<TableCell align="left">Winner</TableCell>
-									<TableCell align="left">Loser</TableCell>
-									<TableCell align="left">Score</TableCell>
-								</TableRow>
-							</TableHead>
-							<TableBody>
-								{rows}
-							</TableBody>
-						</Table>
-					</Paper>
-				</div>
+				<Paper id= "the_paper">
+					<Table size="small">
+						<TableHead>
+							<TableRow>
+								<TableCell align="left">Tournament</TableCell>
+								<TableCell align="left">Round</TableCell>
+								<TableCell align="left">Winner</TableCell>
+								<TableCell align="left">Loser</TableCell>
+								<TableCell align="left">Score</TableCell>
+							</TableRow>
+						</TableHead>
+						<TableBody>
+							{rows}
+						</TableBody>
+					</Table>
+				</Paper>
 			)
 		}
 	}
 }
-
 
 /*
 				
