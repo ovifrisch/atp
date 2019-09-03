@@ -29,7 +29,8 @@ class PlayerSelector extends React.Component {
 			response.json().then(data => {
 				this.setState({
 					players: this.convert_data(data),
-					init_load: true
+					init_load: true,
+					loading: false
 				})
 		}))
 	}
