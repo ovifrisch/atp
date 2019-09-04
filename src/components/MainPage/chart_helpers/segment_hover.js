@@ -17,26 +17,27 @@ function position_box(me, x, y) {
 	//CHANGE DIMS HERE IF YOU CHANGE BOX WIDTH OR HEIGHT
 	var box_height = 300
 	var box_width = 500
+	return [x - 100, y]
 
-	if (x > width / 2) {
-		// bottom right
-		if (y > height / 2) {
-			return [x - box_width, y - box_height]
+	// if (x > width / 2) {
+	// 	// bottom right
+	// 	if (y > height / 2) {
+	// 		return [x - box_width, y - box_height]
 		
-		// top right
-		} else {
-			return [x - box_width, y]
-		}
-	} else {
-		// bottom left
-		if (y > height / 2) {
-			return [x, y - box_height]
+	// 	// top right
+	// 	} else {
+	// 		return [x - box_width, y]
+	// 	}
+	// } else {
+	// 	// bottom left
+	// 	if (y > height / 2) {
+	// 		return [x, y - box_height]
 
-		// top left
-		} else {
-			return [x, y]
-		}
-	}
+	// 	// top left
+	// 	} else {
+	// 		return [x, y]
+	// 	}
+	// }
 }
 
 function rgb2hex(rgb){
@@ -50,9 +51,8 @@ function rgb2hex(rgb){
 function fetch_and_process_match_data(me, data_idx, i1, i2, x, y) {
 	// first display the loading icon in the box
 	var color = me.state.y_data[data_idx]['data']['borderColor']
-	me.info_box.current.set_loading(color)
 	var box_positions = position_box(me, x, y)
-	document.getElementById("the_paper").setAttribute("style", `display:block; left:${box_positions[0]}px; top:${box_positions[1]}px; border: 5px solid ${rgb2hex(color)}`)
+	me.info_box.current.prepare_box(rgb2hex(color), box_positions[0], box_positions[1])
 	var player_id = me.state.y_data[data_idx]['player_id']
 	var left_date = me.state.y_data[data_idx]['dates'][i1]
 	var right_date = me.state.y_data[data_idx]['dates'][i2]
@@ -121,7 +121,7 @@ function handle_hover(me, e, data) {
 				highlight_idx1: 0,
 				highlight_idx2: 0
 			})
-			document.getElementById("the_paper").setAttribute("style", "display:none")
+			document.getElementById("the_tourney_paper").setAttribute("style", "display:none")
 		}
 		return
 
@@ -131,7 +131,7 @@ function handle_hover(me, e, data) {
 		if (indices['i1'] == me.state.highlight_idx1 && indices['i2'] == me.state.highlight_idx2) {
 			return
 		} else {
-			document.getElementById("the_paper").setAttribute("style", "display:none")
+			document.getElementById("the_tourney_paper").setAttribute("style", "display:none")
 		}
 	}
 

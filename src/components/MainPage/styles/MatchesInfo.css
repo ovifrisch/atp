@@ -1,0 +1,14 @@
+
+
+#the_matches_paper {
+	position: absolute;
+	z-index: 100 !important;
+	height: 200px;
+	width: 400px;
+	display: none;
+	overflow-y: auto;
+}
+
+.the_match_row {
+	border: 2px solid black;
+}

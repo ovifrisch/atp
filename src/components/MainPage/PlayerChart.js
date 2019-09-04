@@ -1,6 +1,6 @@
 import React from 'react';
 import ChartComponent, {Chart, Line} from 'react-chartjs-2';
-import MatchInfo from './MatchInfo'
+import TourneysInfo from './TourneysInfo'
 import './styles/PlayerChart.css'
 import {default_colors} from './ChartConstants'
 import db from './chart_helpers/api_calls.js'
@@ -188,7 +188,7 @@ class PlayerChart extends React.Component {
 						options={options}
 					/>
 				</div>
-			<MatchInfo ref={this.info_box}/>
+			<TourneysInfo ref={this.info_box}/>
 			</div>
 		)
 	}
