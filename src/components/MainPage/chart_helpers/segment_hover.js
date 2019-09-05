@@ -4,8 +4,8 @@ function collinear(x1, y1, x2, y2, x3, y3) {
 	return Math.abs(((y1 - y2) * (x1 - x3)) - ((y1 - y3) * (x1 - x2)))
 }
 
-function display_match_data(me, data) {
-	me.info_box.current.set_match_data(data)
+function display_event_data(me, data, player_id) {
+	me.event_box.current.set_event_data(data, player_id)
 }
 
 function position_box(me, x, y) {
@@ -48,20 +48,19 @@ function rgb2hex(rgb){
 	("0" + parseInt(rgb[3],10).toString(16)).slice(-2) : '';
 }
 
-function fetch_and_process_match_data(me, data_idx, i1, i2, x, y) {
-	// first display the loading icon in the box
+function get_events(me, data_idx, i1, i2, x, y) {
 	var color = me.state.y_data[data_idx]['data']['borderColor']
 	var box_positions = position_box(me, x, y)
-	me.info_box.current.prepare_box(rgb2hex(color), box_positions[0], box_positions[1])
+	me.event_box.current.prepare_box(rgb2hex(color), box_positions[0], box_positions[1])
 	var player_id = me.state.y_data[data_idx]['player_id']
 	var left_date = me.state.y_data[data_idx]['dates'][i1]
 	var right_date = me.state.y_data[data_idx]['dates'][i2]
 
-	const set_matches = async() => {
-		var data = await db.get_matches(player_id, left_date, right_date)
-		display_match_data(me, data, x, y, color)
+	const set_events = async() => {
+		var data = await db.get_events(player_id, left_date, right_date)
+		display_event_data(me, data, player_id)
 	}
-	set_matches()
+	set_events()
 }
 
 function highlight_segment(me, data_idx, i1, i2) {
@@ -137,7 +136,7 @@ function handle_hover(me, e, data) {
 
 	// hovering a segment, just started hovering it
 	highlight_segment(me, indices['data_idx'], indices['i1'], indices['i2'])
-	fetch_and_process_match_data(me, indices['data_idx'], indices['i1'], indices['i2'], x_pos, y_pos)
+	get_events(me, indices['data_idx'], indices['i1'], indices['i2'], x_pos, y_pos)
 }
 
 

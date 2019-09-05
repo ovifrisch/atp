@@ -8,29 +8,33 @@ import Paper from '@material-ui/core/Paper';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import Avatar from '@material-ui/core/Avatar';
+import {endpt_base} from '../../GlobalConstants'
 // import { AutoSizer, Column, Table } from 'react-virtualized';
-import './styles/TourneysInfo.css'
+import './styles/EventsInfo.css'
 import { css } from '@emotion/core';
 import {RingLoader} from 'react-spinners';
 import MatchesInfo from './MatchesInfo'
+import db from './chart_helpers/api_calls'
 
-class TourneysInfo extends React.Component {
+class EventsInfo extends React.Component {
 	constructor(props) {
 		super(props)
 		this.match_info = React.createRef()
 		this.state = {
 			loading: false,
-			match_data: [],
+			event_data: [],
+			player_id: null,
 			color: 'red',
 			x_pos: 0,
 			y_pos: 0
 		}
 	}
 
-	set_match_data(data) {
+	set_event_data(data, player_id) {
 		this.setState({
-			match_data: data,
-			loading: false
+			event_data: data,
+			loading: false,
+			player_id: player_id
 		})
 	}
 
@@ -46,23 +50,31 @@ class TourneysInfo extends React.Component {
 	}
 
 	handleHover(idx) {
-		this.match_info.current.setData(
-			this.state.match_data[idx]['name'],
-			this.state.match_data[idx]['date'],
-			this.state.match_data[idx]['matches'],
-			this.state.color,
-			this.state.x_pos,
-			this.state.y_pos
-		)
+
+		const set_matches = async() => {
+			var event_id = this.state.event_data[idx]['event_id']
+			var name = this.state.event_data[idx]['name']
+			var date = this.state.event_data[idx]['date']
+			var data = await db.get_matches(this.state.player_id, event_id, name)
+			this.match_info.current.setData(
+				name,
+				date,
+				data,
+				this.state.color,
+				this.state.x_pos,
+				this.state.y_pos
+			)
+		}
+		set_matches()
 	}
 
 	render() {
-		const tournaments = this.state.match_data.map((tourney, idx) => (
+		const events = this.state.event_data.map((event, idx) => (
 			<Avatar
 				id="the_circle"
-				src="https://pbs.twimg.com/profile_images/877629573021679616/cJ8uOk-c_400x400.jpg"
+				src={endpt_base + "/" + event['image']}
 				onMouseEnter = {() => this.handleHover(idx)}
-				key={tourney.name + tourney.date}
+				key={event['event_id']}
 			/>
 		))
 
@@ -87,7 +99,7 @@ class TourneysInfo extends React.Component {
 					item
 					xs={12}
 					spacing={10}>
-						{tournaments}
+						{events}
 				</Grid>
 			)
 		}
@@ -107,5 +119,5 @@ class TourneysInfo extends React.Component {
 				
 */
 
-export default TourneysInfo;
+export default EventsInfo;
 

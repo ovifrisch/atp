@@ -48,15 +48,26 @@ var db = {
 		return promise(path, params)
 	},
 
-	get_matches: (p_id, date1, date2) => {
-		date1 = date_to_str(date1)
-		date2 = date_to_str(date2)
+	get_events: (player_id, starting_date, ending_date) => {
+		starting_date = date_to_str(starting_date)
+		ending_date = date_to_str(ending_date)
 
-		var path = "/get_significant_matches"
+		var path = "/events"
 		var params = {
-			player_id: p_id,
-			date1: date1,
-			date2: date2
+			player_id: player_id,
+			starting_date: starting_date,
+			ending_date, ending_date
+		}
+
+		return promise(path, params)
+	},
+
+	get_matches: (player_id, event_id, tournament_name) => {
+		var path = "/matches"
+		var params = {
+			player_id: player_id,
+			event_id: event_id,
+			tournament_name: tournament_name
 		}
 		return promise(path, params)
 	},

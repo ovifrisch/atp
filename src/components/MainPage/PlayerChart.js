@@ -1,6 +1,6 @@
 import React from 'react';
 import ChartComponent, {Chart, Line} from 'react-chartjs-2';
-import TourneysInfo from './TourneysInfo'
+import EventsInfo from './EventsInfo'
 import './styles/PlayerChart.css'
 import {default_colors} from './ChartConstants'
 import db from './chart_helpers/api_calls.js'
@@ -14,7 +14,7 @@ import extend_line from './chart_helpers/extended_line'
 class PlayerChart extends React.Component {
 	constructor(props) {
 		super(props)
-		this.info_box = React.createRef()
+		this.event_box = React.createRef()
 		this.state = {
 			window_left_age: 20,
 			window_left_date: '20100101',
@@ -188,7 +188,7 @@ class PlayerChart extends React.Component {
 						options={options}
 					/>
 				</div>
-			<TourneysInfo ref={this.info_box}/>
+			<EventsInfo ref={this.event_box}/>
 			</div>
 		)
 	}
