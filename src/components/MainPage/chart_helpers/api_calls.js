@@ -90,6 +90,19 @@ var db = {
 			ending_date: end_date
 		}
 		return promise(path, params)
+	},
+
+	get_top_ten: () => {
+		var path = "/topTenPlayers"
+		return promise(path, {})
+	},
+
+	get_ten_filtered: (filter) => {
+		var path = "/topTenFiltered"
+		var params = {
+			prefix: filter
+		}
+		return promise(path, params)
 	}
 }
 

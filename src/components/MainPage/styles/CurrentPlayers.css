@@ -11,3 +11,9 @@
 .player_button {
 	color: white !important;
 }
+
+#the_player_circle {
+	height: 50px;
+	width: 50px;
+	border: 2px solid black;
+}

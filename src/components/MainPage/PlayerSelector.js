@@ -2,12 +2,14 @@ import React, {useEffect, useState} from 'react';
 import { Dropdown } from 'semantic-ui-react'
 import './styles/PlayerSelector.css'
 import {endpt_base} from '../../GlobalConstants'
+import db from './chart_helpers/api_calls'
 
 class PlayerSelector extends React.Component {
 	constructor(props) {
 		super(props)
 		this.state = {
 			players: [],
+			player_images: {},
 			loading: false,
 			placeholder: 'Select a Player',
 			hovered_player: null,
@@ -19,20 +21,54 @@ class PlayerSelector extends React.Component {
 		const arr = []
 		for (var i = 0; i < data.length; i++) {
 			let d = data[i]
-			arr.push({text: d['last_name'].concat(", ", d['first_name']), value: d['id'], key: d['id']})
+			arr.push({
+				text: d['last_name'].concat(", ", d['first_name']),
+				value: d['id'],
+				key: d['id']
+			})
 		}
 		return arr
 	}
+	
+
+	set_images(data) {
+		var hash = {}
+		for (var d of data) {
+			hash[d['id']] = d['image']
+		}
+		return hash
+	}
+
+	setTopTen(loading, init_load) {
+		const getSetPlayers = async () => {
+			var data = await db.get_top_ten()
+			var images = this.set_images(data)
+			console.log(images)
+			this.setState({
+				players: this.convert_data(data),
+				images: images,
+				init_load: init_load,
+				loading:loading,
+			})
+		}
+		getSetPlayers()
+	}
+
+	setTopTenFiltered(filter) {
+		const getSetPlayers = async () => {
+			var data = await db.get_ten_filtered(filter)
+			var images = this.set_images(data)
+			this.setState({
+				players: this.convert_data(data),
+				images: images,
+				loading: false
+			})
+		}
+		getSetPlayers()
+	}
 
 	componentDidMount() {
-		fetch(endpt_base + "/topTenPlayers").then(response => 
-			response.json().then(data => {
-				this.setState({
-					players: this.convert_data(data),
-					init_load: true,
-					loading: false
-				})
-		}))
+		this.setTopTen(false, true)
 	}
 
 
@@ -43,40 +79,23 @@ class PlayerSelector extends React.Component {
 		})
 		const filter = data['searchQuery']
 		if (filter.length == 0) {
-			var base = "https://young-meadow-84276.herokuapp.com"
-			fetch(base + "/topTenPlayers").then(response => 
-			response.json().then(data => {
-				this.setState({
-					players: this.convert_data(data),
-					loading: false
-				})
-			}))
+			this.setTopTen(false, this.state.init_load)
 		}
 		else {
-			var base = "https://young-meadow-84276.herokuapp.com"
-			fetch(base + `/topTenFiltered?prefix=${filter}`).then(response =>
-			response.json().then(data => {
-				this.setState({
-					players: this.convert_data(data),
-					loading: false
-				})
-			}))
+			this.setTopTenFiltered(filter)
 		}
 	}
 
 	label_click(data) {
 		var player_name = null;
 		var player_id = data['value']
+		var player_image = this.state.images[player_id]
 		for (var i = 0; i < data['options'].length; i++) {
 			if (data['options'][i]['value'] == player_id) {
 				player_name = data['options'][i]['text']
 			}
 		}
-		this.props.added_player_handler(player_id, player_name)
-	}
-
-	close(d) {
-		console.log(d)
+		this.props.added_player_handler(player_id, player_name, player_image)
 	}
 
 	open(d) {
@@ -86,11 +105,6 @@ class PlayerSelector extends React.Component {
 			})
 		}
 	}
-
-	focus(d) {
-		console.log('focus')
-	}
-
 
 
 	render() {
@@ -104,9 +118,7 @@ class PlayerSelector extends React.Component {
 					onChange={(_, data) => this.label_click(data)}
 					onSearchChange={(_, data) => this.search_change(data)}
 					options={this.state.players}
-					onClose = {(e, d) => this.close(d)}
 					onOpen = {(e, d) => this.open(d)}
-					onFocus={(e, d) => this.focus(d)}
 					text={'Search a player...'}
 				/>
 			</div>

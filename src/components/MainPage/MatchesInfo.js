@@ -5,6 +5,7 @@ import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableRow from '@material-ui/core/TableRow';
 import Grid from '@material-ui/core/Grid';
+import {round_mapper} from './chart_helpers/chart_constants'
 
 class MatchesInfo extends React.Component {
 	constructor(props) {
@@ -30,10 +31,6 @@ class MatchesInfo extends React.Component {
 	}
 
 	parseScore(score) {
-		/*
-		7-6(2) 6-3
-		6-4 2-6 6-3
-		*/
 		var sets = score.split(" ")
 		var winner_sets = []
 		var loser_sets = []
@@ -44,6 +41,44 @@ class MatchesInfo extends React.Component {
 			loser_sets.push(x[1])
 		}
 		return [winner_sets, loser_sets]
+	}
+
+	parseDuration(dur) {
+
+		if (dur == null) {
+			return dur
+		}
+
+		const get_time = (dur, letter) => {
+			var end_idx = dur.indexOf(letter)
+			if (end_idx == -1) {
+				return null;
+			}
+			var start_idx = end_idx - 1
+			while (dur[start_idx] >= '0' && dur[start_idx] <= '9') {
+				start_idx -= 1
+			}
+			start_idx += 1
+			return dur.substring(start_idx, end_idx)
+		}
+		// PT18M18S
+		var hours = get_time(dur, "H")
+		var minutes = get_time(dur, "M")
+		var seconds = get_time(dur, "S")
+		var res = ""
+		if (hours != null) {
+			res += hours + ":"
+		}
+		if (minutes != null) {
+			res += minutes + ":"
+		}
+		if (seconds != null) {
+			if (seconds.length == 1) {
+				res += "0"
+			}
+			res += seconds
+		}
+		return res
 	}
 
 	render() {
@@ -58,10 +93,12 @@ class MatchesInfo extends React.Component {
 				video = (
 					<a href={url} target="_blank">
 						<img
+							className="video_image"
 							src={match['video_thumbnail']}
-							height="50"
-							width="100"
 						/>
+						<p>
+							► {this.parseDuration(match['video_duration'])}
+						</p>
 					</a>
 				)
 			}
@@ -70,34 +107,50 @@ class MatchesInfo extends React.Component {
 				<TableRow key={match['id']} className="the_match_row">
 					<Grid container>
 						<Grid item>
-							{match['round']}
+							{round_mapper[match['round']]}
 						</Grid>
 					</Grid>
 					<Grid container>
-						<Grid item>
+						<Grid item xs={6}>
 							<Grid container>
-								<Grid item>
-									{match['winner']['first_name'] + " " + match['winner']['last_name']}
+								<Grid item xs={6}>
+									<p className="winner_name">
+										{match['winner']['first_name'][0] + ". " + match['winner']['last_name']}
+									</p>
 								</Grid>
-								{
-									parsed_scores[0].map(set_score => (
-										<Grid item>
-											{set_score}
-										</Grid>
-									))
-								}
+								<Grid item>
+									<Grid container spacing={1}>
+										{
+											parsed_scores[0].map(set_score => (
+												<Grid item>
+													<p className="winner_score">
+														{set_score}
+													</p>
+												</Grid>
+											))
+										}
+									</Grid>
+								</Grid>
 							</Grid>
 							<Grid container>
-								<Grid item>
-									{match['loser']['first_name'] + " " + match['loser']['last_name']}
+								<Grid item xs={6}>
+									<p className="loser_name">
+										{match['loser']['first_name'][0] + ". " + match['loser']['last_name']}
+									</p>
 								</Grid>
-								{
-									parsed_scores[1].map(set_score => (
-										<Grid item>
-											{set_score}
-										</Grid>
-									))
-								}
+								<Grid item>
+									<Grid container spacing={1}>
+										{
+											parsed_scores[1].map(set_score => (
+												<Grid item>
+													<p className="loser_score">
+														{set_score}
+													</p>
+												</Grid>
+											))
+										}
+									</Grid>
+								</Grid>
 							</Grid>
 						</Grid>
 						<Grid item>

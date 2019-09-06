@@ -22,9 +22,10 @@ class MainPage extends React.Component {
 		)
 	}
 
-	handle_added_player(id, name) {
+	handle_added_player(id, name, player_image) {
+		console.log(player_image)
 		var player_color = this.graph.current.addPlayer(id, name)
-		this.current_players.current.addPlayer(id, name, player_color)
+		this.current_players.current.addPlayer(id, name, player_color, player_image)
 	}
 
 	handle_removed_player(id) {
@@ -45,7 +46,7 @@ class MainPage extends React.Component {
 			<div id="the_age_comparison">
 				<div id="player_selector_and_current_players">
 					<PlayerSelector
-						added_player_handler={(pl_id, pl_name) => this.handle_added_player(pl_id, pl_name)}
+						added_player_handler={(pl_id, pl_name, pl_image) => this.handle_added_player(pl_id, pl_name, pl_image)}
 					/>
 					<CurrentPlayers
 						ref={this.current_players}

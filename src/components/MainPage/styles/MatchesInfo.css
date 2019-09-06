@@ -4,11 +4,33 @@
 	position: absolute;
 	z-index: 100 !important;
 	height: 200px;
-	width: 400px;
+	width: 340px;
 	display: none;
 	overflow-y: auto;
 }
 
 .the_match_row {
 	border: 2px solid black;
+}
+
+.video_image {
+	border-radius: 10px;
+	height: 41px;
+	width: 74px;
+}
+
+.winner_name {
+
+}
+
+.loser_name {
+	color: gray;
+}
+
+.winner_score {
+
+}
+
+.loser_score {
+	color: gray;
 }
