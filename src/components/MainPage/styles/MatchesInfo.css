@@ -14,7 +14,7 @@
 }
 
 .video_image {
-	border-radius: 10px;
+	border-radius: 6px;
 	height: 41px;
 	width: 74px;
 }
@@ -34,3 +34,20 @@
 .loser_score {
 	color: gray;
 }
+
+.video_duration {
+	position: absolute;
+	bottom: 5px;
+	right: 3px;
+	font-size: 10px;
+	background-color: rgba(0,0,0,0.6);
+}
+
+.video_container {
+  position: relative;
+  text-align: center;
+  color: white;
+}
+
+
+

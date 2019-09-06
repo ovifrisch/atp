@@ -8,36 +8,31 @@ function display_event_data(me, data, player_id) {
 	me.event_box.current.set_event_data(data, player_id)
 }
 
-function position_box(me, x, y) {
+function position_box(me, x, y, height, width) {
 	// position the box based on the quadrant of the hover point
 	// relative to the chart
-	var canvas = me.refs['graph']['chartInstance']['canvas']
-	var height = canvas['clientHeight']
-	var width = canvas['clientWidth']
+	
 	//CHANGE DIMS HERE IF YOU CHANGE BOX WIDTH OR HEIGHT
 	var box_height = 300
 	var box_width = 500
-	return [x - 100, y]
+	var x_pos = x - 100
+	var y_pos = y - 100
+	// the x_pos can't be less than 0
+	// the x_pos + 200 can't be greater than canvas width
+	// the y_pos can't be less than 0
+	// the y_pos + 200 can't be greater than the canvas height
+	if (x_pos < 0) {
+		x_pos = 0
+	} else if (x_pos + 200 > width) {
+		x_pos = width - 200
+	}
 
-	// if (x > width / 2) {
-	// 	// bottom right
-	// 	if (y > height / 2) {
-	// 		return [x - box_width, y - box_height]
-		
-	// 	// top right
-	// 	} else {
-	// 		return [x - box_width, y]
-	// 	}
-	// } else {
-	// 	// bottom left
-	// 	if (y > height / 2) {
-	// 		return [x, y - box_height]
-
-	// 	// top left
-	// 	} else {
-	// 		return [x, y]
-	// 	}
-	// }
+	if (y_pos < 0) {
+		y_pos = 0
+	} else if (y_pos + 200 > height) {
+		y_pos = height - 200
+	}
+	return [x_pos, y_pos]
 }
 
 function rgb2hex(rgb){
@@ -50,8 +45,12 @@ function rgb2hex(rgb){
 
 function get_events(me, data_idx, i1, i2, x, y) {
 	var color = me.state.y_data[data_idx]['data']['borderColor']
-	var box_positions = position_box(me, x, y)
-	me.event_box.current.prepare_box(rgb2hex(color), box_positions[0], box_positions[1])
+	var canvas = me.refs['graph']['chartInstance']['canvas']
+	var height = canvas['clientHeight']
+	var width = canvas['clientWidth']
+
+	var init_box_position = position_box(me, x, y, height, width)
+	me.event_box.current.prepare_box(rgb2hex(color), init_box_position[0], init_box_position[1], x, y, height, width)
 	var player_id = me.state.y_data[data_idx]['player_id']
 	var left_date = me.state.y_data[data_idx]['dates'][i1]
 	var right_date = me.state.y_data[data_idx]['dates'][i2]

@@ -92,13 +92,15 @@ class MatchesInfo extends React.Component {
 				var url = "http://" + match['video_url']
 				video = (
 					<a href={url} target="_blank">
-						<img
-							className="video_image"
-							src={match['video_thumbnail']}
-						/>
-						<p>
-							► {this.parseDuration(match['video_duration'])}
-						</p>
+						<div className="video_container">
+							<img
+								className="video_image"
+								src={match['video_thumbnail']}
+							/>
+							<div className="video_duration">
+								► {this.parseDuration(match['video_duration'])}
+							</div>
+						</div>
 					</a>
 				)
 			}
@@ -113,7 +115,7 @@ class MatchesInfo extends React.Component {
 					<Grid container>
 						<Grid item xs={6}>
 							<Grid container>
-								<Grid item xs={6}>
+								<Grid item xs={8}>
 									<p className="winner_name">
 										{match['winner']['first_name'][0] + ". " + match['winner']['last_name']}
 									</p>
@@ -133,7 +135,7 @@ class MatchesInfo extends React.Component {
 								</Grid>
 							</Grid>
 							<Grid container>
-								<Grid item xs={6}>
+								<Grid item xs={8}>
 									<p className="loser_name">
 										{match['loser']['first_name'][0] + ". " + match['loser']['last_name']}
 									</p>
