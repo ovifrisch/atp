@@ -3,14 +3,17 @@
 #the_matches_paper {
 	position: absolute;
 	z-index: 100 !important;
+	border-radius: 20px;
+	max-height: 200px;
 	height: 200px;
 	width: 340px;
 	display: none;
 	overflow-y: auto;
+	overflow-x: hidden;
 }
 
 .the_match_row {
-	border: 2px solid black;
+	border: 1px solid gray;
 }
 
 .video_image {
@@ -47,6 +50,13 @@
   position: relative;
   text-align: center;
   color: white;
+}
+
+.tourny_header {
+	height: auto;
+	text-align: center;
+	vertical-align: middle;
+	font-size: 30px;
 }
 
 

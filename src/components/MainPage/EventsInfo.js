@@ -64,8 +64,12 @@ class EventsInfo extends React.Component {
 		})
 	}
 
-	handleHover(idx) {
-
+	initiate_match_display(idx, x, y) {
+		this.match_info.current.prepare_box(
+			this.state.color,
+			x + $("#the_tourney_paper").position().left,
+			y + $("#the_tourney_paper").position().top
+		)
 		const set_matches = async() => {
 			var event_id = this.state.event_data[idx]['event_id']
 			var name = this.state.event_data[idx]['name']
@@ -74,13 +78,29 @@ class EventsInfo extends React.Component {
 			this.match_info.current.setData(
 				name,
 				date,
-				data,
-				this.state.color,
-				this.state.hover_x,
-				this.state.hover_y
+				data
 			)
 		}
 		set_matches()
+	}
+
+	mouseEnter(idx, e) {
+		var x = e['nativeEvent']['layerX']
+		var y = e['nativeEvent']['layerY']
+		var el_id = `#the_circle_${this.state.event_data[idx]['event_id']}`
+		$(el_id).addClass("blink_animate")
+		var me = this
+		$(el_id).one(
+			"animationend",
+			function(event) {
+				me.initiate_match_display(idx, x, y)
+			}
+		)
+	}
+
+	mouseLeave(idx, e) {
+		var el_id = `#the_circle_${this.state.event_data[idx]['event_id']}`
+		$(el_id).removeClass("blink_animate")
 	}
 
 	split_events(events, keep, empty_item) {
@@ -138,10 +158,12 @@ class EventsInfo extends React.Component {
 		const events = this.state.event_data.map((event, idx) => (
 			<Grid item>
 				<Avatar
-					id="the_circle"
+					className="the_circle"
 					src={endpt_base + "/" + event['image']}
-					onMouseEnter = {() => this.handleHover(idx)}
+					onMouseEnter = {(e) => this.mouseEnter(idx, e)}
+					onMouseLeave = {(e) => this.mouseLeave(idx, e)}
 					key={event['event_id']}
+					id={"the_circle_" + event['event_id']}
 				/>
 			</Grid>
 		))

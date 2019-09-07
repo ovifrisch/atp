@@ -6,44 +6,12 @@ import TableBody from '@material-ui/core/TableBody';
 import TableRow from '@material-ui/core/TableRow';
 import Grid from '@material-ui/core/Grid';
 import {round_mapper} from './chart_helpers/chart_constants'
+import {RingLoader} from 'react-spinners';
+import $ from "jquery";
 
-class MatchesInfo extends React.Component {
-	constructor(props) {
-		super(props)
-		this.state = {
-			touney_name: null,
-			tourney_date: null,
-			tourney_matches: []
-		}
-	}
+const Video = (props) => {
 
-	setData(name, date, matches, color, x_pos, y_pos) {
-		this.setState({
-			tourney_name: name,
-			tourney_date: date, 
-			tourney_matches: matches
-		})
-		document.getElementById("the_matches_paper").setAttribute("style", `display:block; left:${x_pos}px; top:${y_pos}px; border: 5px solid ${color}`)
-	}
-
-	mouseLeave() {
-		document.getElementById("the_matches_paper").setAttribute("style", "display:none;")
-	}
-
-	parseScore(score) {
-		var sets = score.split(" ")
-		var winner_sets = []
-		var loser_sets = []
-		for (var set of sets) {
-			set = set.replace(/\(.*\)/, "") // remove the tiebreak parenthesis
-			var x = set.split("-")
-			winner_sets.push(x[0])
-			loser_sets.push(x[1])
-		}
-		return [winner_sets, loser_sets]
-	}
-
-	parseDuration(dur) {
+	const parseDuration = (dur) => {
 
 		if (dur == null) {
 			return dur
@@ -81,95 +49,180 @@ class MatchesInfo extends React.Component {
 		return res
 	}
 
+	return (
+		<a href={props.url} target="_blank">
+			<div className="video_container">
+				<img
+					className="video_image"
+					src={props.thumbnail}
+				/>
+				<div className="video_duration">
+					► {parseDuration(props.duration)}
+				</div>
+			</div>
+		</a>
+	)
+}
+
+const PlayerRow = (props) => {
+	return (
+		<Grid container>
+			<Grid item xs={8}>
+				<p className={props.nameClassName}>
+					{props.name}
+				</p>
+			</Grid>
+			<Grid item>
+				<Grid container spacing={1}>
+					{
+						props.parsedScores.map(set_score => (
+							<Grid item>
+								<p className={props.scoreClassName}>
+									{set_score}
+								</p>
+							</Grid>
+						))
+					}
+				</Grid>
+			</Grid>
+		</Grid>
+	)
+}
+
+
+const Match = (props) => {
+
+	const parseScore = (score) => {
+		var sets = score.split(" ")
+		var winner_sets = []
+		var loser_sets = []
+		for (var set of sets) {
+			set = set.replace(/\(.*\)/, "") // remove the tiebreak parenthesis
+			var x = set.split("-")
+			winner_sets.push(x[0])
+			loser_sets.push(x[1])
+		}
+		return [winner_sets, loser_sets]
+	}
+
+	var parsed_scores = parseScore(props.match['score'])
+
+	var video = null;
+	if (props.match['video_url'] !== null) {
+		video = (
+			<Video
+				url={"http://" + props.match['video_url']}
+				thumbnail={props.match['video_thumbnail']}
+				duration={props.match['video_duration']}
+			/>
+		)
+	}
+
+	return (
+		<TableRow key={props.match['id']} className="the_match_row">
+			<Grid container>
+				<Grid item>
+					{round_mapper[props.match['round']]}
+				</Grid>
+			</Grid>
+			<Grid container>
+				<Grid item xs={9}>
+					<PlayerRow
+						nameClassName="winner_name"
+						scoreClassName="winner_score"
+						name={props.match['winner']['first_name'][0] + ". " + props.match['winner']['last_name']}
+						parsedScores={parsed_scores[0]}
+					/>
+					<PlayerRow
+						nameClassName="loser_name"
+						scoreClassName="loser_score"
+						name={props.match['loser']['first_name'][0] + ". " + props.match['loser']['last_name']}
+						parsedScores={parsed_scores[1]}
+					/>
+				</Grid>
+				<Grid item>
+					{video}
+				</Grid>
+			</Grid>
+		</TableRow>
+	)
+}
+
+class MatchesInfo extends React.Component {
+	constructor(props) {
+		super(props)
+		this.state = {
+			tourney_name: null,
+			tourney_date: null,
+			tourney_matches: [],
+			loading: true,
+			color: 'red'
+		}
+	}
+
+	prepare_box(color, x_pos, y_pos) {
+		$("#the_matches_paper").css("left", x_pos)
+		$("#the_matches_paper").css("top", y_pos)
+		$("#the_matches_paper").css("display", "block")
+		$("#the_matches_paper").css("border", `5px solid ${color}`)
+		this.setState({
+			color: color
+		})
+	}
+
+	setData(name, date, matches) {
+		this.setState({
+			tourney_name: name,
+			tourney_date: date, 
+			tourney_matches: matches,
+			loading: false
+		})
+	}
+
+	mouseLeave() {
+		$("#the_matches_paper").css("display", "none")
+	}
+
 	render() {
 
-		const match_boxes = this.state.tourney_matches.map(match => {
-			
-			var parsed_scores = this.parseScore(match['score'])
+		var content;
 
-			var video = null;
-			if (match['video_url'] !== null) {
-				var url = "http://" + match['video_url']
-				video = (
-					<a href={url} target="_blank">
-						<div className="video_container">
-							<img
-								className="video_image"
-								src={match['video_thumbnail']}
-							/>
-							<div className="video_duration">
-								► {this.parseDuration(match['video_duration'])}
-							</div>
-						</div>
-					</a>
-				)
-			}
+		const loader_style = `
+			display: block;
+			margin: 0 auto;
+			top: 65px;
+		`;
 
-			return (
-				<TableRow key={match['id']} className="the_match_row">
-					<Grid container>
-						<Grid item>
-							{round_mapper[match['round']]}
-						</Grid>
-					</Grid>
-					<Grid container>
-						<Grid item xs={6}>
-							<Grid container>
-								<Grid item xs={8}>
-									<p className="winner_name">
-										{match['winner']['first_name'][0] + ". " + match['winner']['last_name']}
-									</p>
-								</Grid>
-								<Grid item>
-									<Grid container spacing={1}>
-										{
-											parsed_scores[0].map(set_score => (
-												<Grid item>
-													<p className="winner_score">
-														{set_score}
-													</p>
-												</Grid>
-											))
-										}
-									</Grid>
-								</Grid>
-							</Grid>
-							<Grid container>
-								<Grid item xs={8}>
-									<p className="loser_name">
-										{match['loser']['first_name'][0] + ". " + match['loser']['last_name']}
-									</p>
-								</Grid>
-								<Grid item>
-									<Grid container spacing={1}>
-										{
-											parsed_scores[1].map(set_score => (
-												<Grid item>
-													<p className="loser_score">
-														{set_score}
-													</p>
-												</Grid>
-											))
-										}
-									</Grid>
-								</Grid>
-							</Grid>
-						</Grid>
-						<Grid item>
-							{video}
-						</Grid>
-					</Grid>
-				</TableRow>
+		if (this.state.loading) {
+			content = (
+				<RingLoader
+					css={loader_style}
+					color={this.state.color}
+				/>
 			)
-		})
+		} else {
 
-		return (
-			<Paper id="the_matches_paper" onMouseLeave = {this.mouseLeave}>
+			var match_boxes = this.state.tourney_matches.map(match => (
+				<Match
+					match={match}
+				/>
+			))
+
+			content = (
 				<Table>
 					<TableBody>
+						<TableRow className="tourny_header">
+							{this.state.tourney_name}
+						</TableRow>
 						{match_boxes}
 					</TableBody>
 				</Table>
+			)
+		}
+
+		return (
+			<Paper id="the_matches_paper" onMouseLeave = {this.mouseLeave}>
+				{content}
 			</Paper>
 		)
 	}

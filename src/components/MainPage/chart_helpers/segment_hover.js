@@ -120,6 +120,7 @@ function handle_hover(me, e, data) {
 				highlight_idx2: 0
 			})
 			document.getElementById("the_tourney_paper").setAttribute("style", "display:none")
+			document.getElementById("the_matches_paper").setAttribute("style", "display:none")
 		}
 		return
 
@@ -130,6 +131,7 @@ function handle_hover(me, e, data) {
 			return
 		} else {
 			document.getElementById("the_tourney_paper").setAttribute("style", "display:none")
+			document.getElementById("the_matches_paper").setAttribute("style", "display:none")
 		}
 	}
 
