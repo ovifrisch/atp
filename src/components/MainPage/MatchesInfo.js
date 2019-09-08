@@ -156,17 +156,20 @@ class MatchesInfo extends React.Component {
 			tourney_date: null,
 			tourney_matches: [],
 			loading: true,
-			color: 'red'
+			color: 'red',
+			displaying: false
 		}
 	}
 
 	prepare_box(color, x_pos, y_pos) {
-		$("#the_matches_paper").css("left", x_pos)
-		$("#the_matches_paper").css("top", y_pos)
+		$("#the_matches_paper").css("left", x_pos - 170)
+		$("#the_matches_paper").css("top", y_pos - 100)
 		$("#the_matches_paper").css("display", "block")
 		$("#the_matches_paper").css("border", `5px solid ${color}`)
+		$("#the_matches_paper").addClass("scale_transform")
 		this.setState({
-			color: color
+			color: color,
+			displaying: true
 		})
 	}
 
@@ -179,8 +182,15 @@ class MatchesInfo extends React.Component {
 		})
 	}
 
+	componentDidUpdate() {
+		$("#the_matches_paper").css("height", "auto")
+	}
+
 	mouseLeave() {
 		$("#the_matches_paper").css("display", "none")
+		this.setState({
+			displaying: false
+		})
 	}
 
 	render() {
@@ -221,7 +231,7 @@ class MatchesInfo extends React.Component {
 		}
 
 		return (
-			<Paper id="the_matches_paper" onMouseLeave = {this.mouseLeave}>
+			<Paper id="the_matches_paper" onMouseLeave = {() => this.mouseLeave()}>
 				{content}
 			</Paper>
 		)

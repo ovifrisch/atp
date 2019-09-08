@@ -31,13 +31,17 @@ class EventsInfo extends React.Component {
 			hover_y: 0,
 			data_is_set: false, // needed in componentDidUpdate
 			canvas_height: 0,
-			canvas_width: 0
+			canvas_width: 0,
+			displaying: false
 		}
 	}
 
+	/*
+	Called from segment_hover.js after JSON response has been received
+
+	
+	*/
 	set_event_data(data, player_id) {
-		$("#the_tourney_paper").css("width", "auto")
-		$("#the_tourney_paper").css("height", "auto")
 		this.setState({
 			event_data: data,
 			player_id: player_id,
@@ -51,8 +55,7 @@ class EventsInfo extends React.Component {
 		$("#the_tourney_paper").css("left", x_pos)
 		$("#the_tourney_paper").css("top", y_pos)
 		$("#the_tourney_paper").css("border", `5px solid ${color}`)
-		$("#the_tourney_paper").css("width", 200)
-		$("#the_tourney_paper").css("height", 200)
+		$("#the_tourney_paper").addClass("scale_transform")
 		this.setState({
 			loading: true,
 			color: color,
@@ -85,6 +88,9 @@ class EventsInfo extends React.Component {
 	}
 
 	mouseEnter(idx, e) {
+		if (this.match_info.current.state.displaying) {
+			return
+		}
 		var x = e['nativeEvent']['layerX']
 		var y = e['nativeEvent']['layerY']
 		var el_id = `#the_circle_${this.state.event_data[idx]['event_id']}`
@@ -134,7 +140,9 @@ class EventsInfo extends React.Component {
 	}
 
 	componentDidUpdate() {
-		if (this.state.data_is_set) {		
+		if (this.state.data_is_set) {
+			$("#the_tourney_paper").css("width", "auto")
+			$("#the_tourney_paper").css("height", "auto")
 			var box_positions = this.set_box_positions(
 				$("#the_tourney_paper").height(),
 				$("#the_tourney_paper").width()
