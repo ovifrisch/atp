@@ -1,38 +1,28 @@
 import {endpt_base} from '../../../GlobalConstants'
+// import { Query } from 'react-apollo'
+import gql from 'graphql-tag'
+import ApolloClient from 'apollo-boost'
+import {convert1, convert2, convert3, convert_rank} from './date_conversions'
 
-function date_to_str(date) {
-	var mo;
-	var day;
-	var yr = date['yr']
-	if (date['mo'] < 10) {
-		mo = "0" + date['mo'].toString()
-	} else{
-		mo = date['mo'].toString()
-	}
-	if (date['day'] < 10){
-		day = "0" + date['day'].toString()
-	} else {
-		day = date['day'].toString()
-	}
-	var res = yr + mo + day
-	return res
-}
+const client = new ApolloClient({
+	uri: endpt_base + "/graphql"
+})
 
-function query_string(params) {
-	return Object.keys(params).map((key) => key + "=" + params[key]).join("&")
-}
-
-function fullpath(path, query_string) {
-	return endpt_base + path + "?" + query_string
-}
-
-function promise(path, params) {
-	return fetch(fullpath(path, query_string(params))).then(
-		response => response.json().then(
-			data => {
-				return data
+function promise(query) {
+	return client.query({
+		query: gql(query)
+	}).then(
+		data => {
+			console.log(data)
+			data = data['data']
+			for (var i = 2; i < arguments.length; i++) {
+				data = data[arguments[i]]
 			}
-		)
+			if (arguments[1] !== null) {
+				data = data.map(x => arguments[1](x))
+			}
+			return data
+		}
 	)
 }
 
@@ -40,69 +30,120 @@ var db = {
 
 	// get the ranking dates in asc order between these two dates
 	get_dates: (min, max) => {
-		var path = "/get_ranking_dates_between"
-		var params = {
-			starting_date: min,
-			ending_date: max
-		}
-		return promise(path, params)
+		var query = `
+			{
+				dates(minDate: "${convert1(min)}", maxDate: "${convert1(max)}")
+			}
+		`
+		return promise(query, convert3, 'dates')
 	},
 
-	get_events: (player_id, starting_date, ending_date) => {
-		starting_date = date_to_str(starting_date)
-		ending_date = date_to_str(ending_date)
+	get_events: (player_id, min_date, max_date) => {
+		min_date = convert2(min_date)
+		max_date = convert2(max_date)
 
-		var path = "/events"
-		var params = {
-			player_id: player_id,
-			starting_date: starting_date,
-			ending_date, ending_date
-		}
+		var query = `
+			{
+				aPlayer(playerId: ${player_id}) {
+					events(minDate: "${min_date}", maxDate: "${max_date}") {
+						eventId
+						tournamentName
+						tournamentImage
+						eventDate
+					}
+				}
+			}
+		`
 
-		return promise(path, params)
+		return promise(query, null, 'aPlayer', 'events')
 	},
 
 	get_matches: (player_id, event_id, tournament_name) => {
-		var path = "/matches"
-		var params = {
-			player_id: player_id,
-			event_id: event_id,
-			tournament_name: tournament_name
-		}
-		return promise(path, params)
+
+		var query = `
+			{
+				aPlayer(playerId: ${player_id}) {
+					matches(eventId: ${event_id}) {
+						matchId
+						winner {
+							firstName
+							lastName
+						}
+						loser {
+							firstName
+							lastName
+						}
+						score
+						round_
+						videoUrl
+						videoThumbnail
+						videoDuration
+					}
+				}
+			}
+		`
+		return promise(query, null, 'aPlayer', 'matches')
 	},
 
-	get_rankings_by_age: (p_id, start_age, end_age) => {
-		var path = "/get_ranking_history"
-		var params = {
-			player_id: p_id,
-			starting_age: start_age,
-			ending_age: end_age
-		}
-		return promise(path, params)
+	get_rankings_by_date: (p_id, min_date, max_date) => {
+		min_date = convert1(min_date)
+		max_date = convert1(max_date)
+		var query = `
+			{
+				aPlayer(playerId: ${p_id}) {
+					rankings(minDate: "${min_date}", maxDate: "${max_date}") {
+						rank
+						rankingDate
+					}
+				}
+			}
+		`
+		return promise(query, convert_rank, 'aPlayer', 'rankings')
 	},
 
-	get_rankings_by_date: (p_id, start_date, end_date) => {
-		var path = "/get_ranking_history_date"
-		var params = {
-			player_id: p_id,
-			starting_date: start_date,
-			ending_date: end_date
-		}
-		return promise(path, params)
+
+	get_rankings_by_age: (p_id, min_age, max_age) => {
+		var query = `
+			{
+				aPlayer(playerId: ${p_id}) {
+					rankings(minAge: ${min_age}, maxAge: ${max_age}) {
+						rank
+						rankingDate
+						playerAge
+					}
+				}
+			}
+		`
+		return promise(query, convert_rank, 'aPlayer', 'rankings')
 	},
+
 
 	get_top_ten: () => {
-		var path = "/topTenPlayers"
-		return promise(path, {})
+		var query = `
+			{
+				players(limit: 10) {
+					firstName
+					lastName
+					playerId
+					image
+				}
+			}
+		`
+		return promise(query, null, 'players')
 	},
 
 	get_ten_filtered: (filter) => {
-		var path = "/topTenFiltered"
-		var params = {
-			prefix: filter
-		}
-		return promise(path, params)
+		var query = `
+			{
+				players(limit: 10, filterString: "${filter}") {
+					firstName
+					lastName
+					playerId
+					image
+				}
+			}
+		`
+		return promise(query, null, 'players')
 	}
 }
 

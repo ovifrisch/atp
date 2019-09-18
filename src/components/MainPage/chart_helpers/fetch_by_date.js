@@ -55,7 +55,7 @@ function getYByDate(me, start_date, end_date, y_axis, player_info, preserved_y_d
 			if (y_axis == 'rank') {
 				data = await db.get_rankings_by_date(player_ids[idx], start_date, end_date)
 				var ranks = data.map(x => x['rank'])
-				var dates = data.map(x => x['date'])
+				var dates = data.map(x => x['rankingDate'])
 				var padded_data = pad_data(
 					ranks,
 					dates,

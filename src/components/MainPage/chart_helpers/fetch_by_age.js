@@ -38,8 +38,6 @@ function getYByAge(me, start_age, end_age, y_axis, player_info, preserved_y_data
 	var new_x_data = get_x_axis_data(start_age, end_age)
 
 	const getAndSetData = async(idx) => {
-		// console.log(new_x_data)
-		// console.log([...preserved_y_data, new_y_data])
 		if (idx >= player_ids.length) {
 			me.setState({
 				y_data: preserved_y_data.concat(new_y_data),
@@ -52,8 +50,8 @@ function getYByAge(me, start_age, end_age, y_axis, player_info, preserved_y_data
 				data = await db.get_rankings_by_age(player_ids[idx], start_age, end_age)
 			}
 			var y_axis_data = data.map(x => x[y_axis])
-			var dates = data.map(x => x['date'])
-			var ages = data.map(x => x['age'])
+			var dates = data.map(x => x['rankingDate'])
+			var ages = data.map(x => x['playerAge'])
 			var padded_data = pad_data(
 				y_axis_data,
 				dates,

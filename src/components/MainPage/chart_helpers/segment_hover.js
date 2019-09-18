@@ -4,8 +4,8 @@ function collinear(x1, y1, x2, y2, x3, y3) {
 	return Math.abs(((y1 - y2) * (x1 - x3)) - ((y1 - y3) * (x1 - x2)))
 }
 
-function display_event_data(me, data, player_id) {
-	me.event_box.current.set_event_data(data, player_id)
+function display_event_data(me, events, player_id) {
+	me.event_box.current.set_event_data(events, player_id)
 }
 
 function position_box(me, x, y, height, width) {
@@ -56,8 +56,8 @@ function get_events(me, data_idx, i1, i2, x, y) {
 	var right_date = me.state.y_data[data_idx]['dates'][i2]
 
 	const set_events = async() => {
-		var data = await db.get_events(player_id, left_date, right_date)
-		display_event_data(me, data, player_id)
+		var events = await db.get_events(player_id, left_date, right_date)
+		display_event_data(me, events, player_id)
 	}
 	set_events()
 }

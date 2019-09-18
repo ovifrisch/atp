@@ -22,9 +22,9 @@ class PlayerSelector extends React.Component {
 		for (var i = 0; i < data.length; i++) {
 			let d = data[i]
 			arr.push({
-				text: d['last_name'].concat(", ", d['first_name']),
-				value: d['id'],
-				key: d['id']
+				text: d['lastName'].concat(", ", d['firstName']),
+				value: d['playerId'],
+				key: d['playerId']
 			})
 		}
 		return arr
@@ -34,18 +34,17 @@ class PlayerSelector extends React.Component {
 	set_images(data) {
 		var hash = {}
 		for (var d of data) {
-			hash[d['id']] = d['image']
+			hash[d['playerId']] = d['image']
 		}
 		return hash
 	}
 
 	setTopTen(loading, init_load) {
 		const getSetPlayers = async () => {
-			var data = await db.get_top_ten()
-			var images = this.set_images(data)
-			console.log(images)
+			var players = await db.get_top_ten()
+			var images = this.set_images(players)
 			this.setState({
-				players: this.convert_data(data),
+				players: this.convert_data(players),
 				images: images,
 				init_load: init_load,
 				loading:loading,
@@ -56,10 +55,10 @@ class PlayerSelector extends React.Component {
 
 	setTopTenFiltered(filter) {
 		const getSetPlayers = async () => {
-			var data = await db.get_ten_filtered(filter)
-			var images = this.set_images(data)
+			var players = await db.get_ten_filtered(filter)
+			var images = this.set_images(players)
 			this.setState({
-				players: this.convert_data(data),
+				players: this.convert_data(players),
 				images: images,
 				loading: false
 			})

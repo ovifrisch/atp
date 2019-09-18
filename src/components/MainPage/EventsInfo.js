@@ -41,9 +41,9 @@ class EventsInfo extends React.Component {
 
 	
 	*/
-	set_event_data(data, player_id) {
+	set_event_data(events, player_id) {
 		this.setState({
-			event_data: data,
+			event_data: events,
 			player_id: player_id,
 			data_is_set: true,
 			loading: false
@@ -74,14 +74,14 @@ class EventsInfo extends React.Component {
 			y + $("#the_tourney_paper").position().top
 		)
 		const set_matches = async() => {
-			var event_id = this.state.event_data[idx]['event_id']
-			var name = this.state.event_data[idx]['name']
-			var date = this.state.event_data[idx]['date']
-			var data = await db.get_matches(this.state.player_id, event_id, name)
+			var event_id = this.state.event_data[idx]['eventId']
+			var name = this.state.event_data[idx]['tournamentName']
+			var date = this.state.event_data[idx]['eventDate']
+			var matches = await db.get_matches(this.state.player_id, event_id, name)
 			this.match_info.current.setData(
 				name,
 				date,
-				data
+				matches
 			)
 		}
 		set_matches()
@@ -93,7 +93,7 @@ class EventsInfo extends React.Component {
 		}
 		var x = e['nativeEvent']['layerX']
 		var y = e['nativeEvent']['layerY']
-		var el_id = `#the_circle_${this.state.event_data[idx]['event_id']}`
+		var el_id = `#the_circle_${this.state.event_data[idx]['eventId']}`
 		$(el_id).addClass("blink_animate")
 		var me = this
 		$(el_id).one(
@@ -105,7 +105,7 @@ class EventsInfo extends React.Component {
 	}
 
 	mouseLeave(idx, e) {
-		var el_id = `#the_circle_${this.state.event_data[idx]['event_id']}`
+		var el_id = `#the_circle_${this.state.event_data[idx]['eventId']}`
 		$(el_id).removeClass("blink_animate")
 	}
 
@@ -167,11 +167,11 @@ class EventsInfo extends React.Component {
 			<Grid item>
 				<Avatar
 					className="the_circle"
-					src={endpt_base + "/" + event['image']}
+					src={endpt_base + "/" + event['tournamentImage']}
 					onMouseEnter = {(e) => this.mouseEnter(idx, e)}
 					onMouseLeave = {(e) => this.mouseLeave(idx, e)}
-					key={event['event_id']}
-					id={"the_circle_" + event['event_id']}
+					key={event['eventId']}
+					id={"the_circle_" + event['eventId']}
 				/>
 			</Grid>
 		))

@@ -108,21 +108,21 @@ const Match = (props) => {
 	var parsed_scores = parseScore(props.match['score'])
 
 	var video = null;
-	if (props.match['video_url'] !== null) {
+	if (props.match['videoUrl'] !== null) {
 		video = (
 			<Video
-				url={"http://" + props.match['video_url']}
-				thumbnail={props.match['video_thumbnail']}
-				duration={props.match['video_duration']}
+				url={"http://" + props.match['videoUrl']}
+				thumbnail={props.match['videoThumbnail']}
+				duration={props.match['videoDuration']}
 			/>
 		)
 	}
 
 	return (
-		<TableRow key={props.match['id']} className="the_match_row">
+		<TableRow key={props.match['matchId']} className="the_match_row">
 			<Grid container>
 				<Grid item>
-					{round_mapper[props.match['round']]}
+					{round_mapper[props.match['round_']]}
 				</Grid>
 			</Grid>
 			<Grid container>
@@ -130,13 +130,13 @@ const Match = (props) => {
 					<PlayerRow
 						nameClassName="winner_name"
 						scoreClassName="winner_score"
-						name={props.match['winner']['first_name'][0] + ". " + props.match['winner']['last_name']}
+						name={props.match['winner']['firstName'][0] + ". " + props.match['winner']['lastName']}
 						parsedScores={parsed_scores[0]}
 					/>
 					<PlayerRow
 						nameClassName="loser_name"
 						scoreClassName="loser_score"
-						name={props.match['loser']['first_name'][0] + ". " + props.match['loser']['last_name']}
+						name={props.match['loser']['firstName'][0] + ". " + props.match['loser']['lastName']}
 						parsedScores={parsed_scores[1]}
 					/>
 				</Grid>
